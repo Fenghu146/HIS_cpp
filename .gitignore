@@ -1,0 +1,28 @@
+# Build
+cmake-build-*/
+build/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.out
+
+# Keep source
+!*.cpp
+!*.h
+!*.hpp
+!CMakeLists.txt
