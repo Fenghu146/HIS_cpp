@@ -91,7 +91,7 @@ public:
            << " | 单价: " << d.price
            << " | 库存: " << d.stock
            << " | 阈值: " << d.warning_stock
-           << " | 科室: " << dept_names;
+           << " | 科室: " << d.dept_names;
         return os;
     }
 };
