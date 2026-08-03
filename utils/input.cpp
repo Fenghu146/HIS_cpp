@@ -44,7 +44,12 @@ int getValidChoice(int min, int max) {
             cout << "[错误] 只能输入数字！\n";
             continue;
         }
-        int choice = stoi(input);
+        int choice;
+        try { choice = stoi(input); }
+        catch (const out_of_range&) {
+            cout << "[错误] 超出范围！\n";
+            continue;
+        }
         if (choice >= min && choice <= max) return choice;
         cout << "[错误] 超出范围！\n";
     }

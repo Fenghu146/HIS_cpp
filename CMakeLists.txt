@@ -13,4 +13,6 @@ add_executable(HIS_cpp
     utils/validator.h
     utils/validator.cpp
     data/data_manager.h
+    data/patient_manager.h
+    data/patient_manager.cpp
 )
