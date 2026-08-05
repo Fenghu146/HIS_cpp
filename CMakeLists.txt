@@ -15,4 +15,10 @@ add_executable(HIS_cpp
     data/data_manager.h
     data/patient_manager.h
     data/patient_manager.cpp
+    data/doctor_manager.h
+    data/doctor_manager.cpp
+    data/dept_manager.h
+    data/dept_manager.cpp
+    data/drug_manager.h
+    data/drug_manager.cpp
 )

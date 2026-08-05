@@ -29,6 +29,14 @@ void PatientManager::load() {
         list.push_back(std::move(p));
     }
     in.close();
+
+    // 更新 next_id 为当前最大ID+1
+    for (auto& p : list) {
+        if (p->id.length() > 1 && p->id[0] == ID_PATIENT) {
+            int num = stoi(p->id.substr(1));
+            if (num >= next_id) next_id = num + 1;
+        }
+    }
 }
 
 void PatientManager::save() {

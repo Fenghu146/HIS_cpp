@@ -11,6 +11,14 @@ T* findById(vector<unique_ptr<T>>& list, const string& id) {
 }
 
 template<typename T>
+const T* findById(const vector<unique_ptr<T>>& list, const string& id) {
+    for (auto& item : list) {
+        if (item->id == id) return item.get();
+    }
+    return nullptr;
+}
+
+template<typename T>
 bool removeById(vector<unique_ptr<T>>& list, const string& id) {
     for (auto it = list.begin(); it != list.end(); ++it) {
         if ((*it)->id == id) {
