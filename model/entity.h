@@ -101,9 +101,9 @@ public:
         return os;
     }
 
-    // 显示用：ID → 名称（需要外部传入转换函数）
+    // 显示用：把 Drug 的科室 ID 转成名称后输出，便于可读性
     friend ostream& displayWithDeptNames(ostream& os, const Drug& d,
-        const string& (*idToName)(const string&)) {
+        const string& (*idToName)(const string&)) { //函数指针参数，用于把科室ID转成名称
         os << "ID: " << d.id
            << " | 通用名: " << d.general_name
            << " | 商品名: " << (d.trade_name.empty() ? "-" : d.trade_name)
@@ -113,17 +113,17 @@ public:
            << " | 阈值: " << d.warning_stock;
         os << " | 科室: ";
         if (d.dept_ids.empty()) {
-            os << "通用";
+            os << "通用"; // 空串表示通用药品
         } else {
             vector<string> ids;
             stringstream ss(d.dept_ids);
             string token;
             while (getline(ss, token, ',')) {
-                string name = idToName(token);
-                ids.push_back(name.empty() ? token : name);
+                string name = idToName(token); // 通过外部函数把 ID 转成名称
+                ids.push_back(name.empty() ? token : name); // 若无法转换则显示原 ID
             }
             for (size_t i = 0; i < ids.size(); i++) {
-                if (i > 0) os << ",";
+                if (i > 0) os << ","; // 多个科室用逗号分隔
                 os << ids[i];
             }
         }
@@ -181,9 +181,89 @@ public:
     }
 };
 
-using PatientList = vector<unique_ptr<Patient>>;
+// 病历
+class MedicalRecord {
+public:
+    string id;              // MR1, MR2, ...
+    string appointment_id;  // 关联挂号单
+    string patient_id;
+    string doctor_id;
+    string complaint;       // 主诉
+    string diagnosis;       // 诊断
+    string orders;          // 医嘱
+    string create_time;
+    bool need_hospitalize = false;  // 是否建议住院
+
+    MedicalRecord() = default;
+
+    friend ostream& operator<<(ostream& os, const MedicalRecord& r) {
+        os << "ID:" << r.id
+           << "| 挂号:" << r.appointment_id
+           << "| 患者:" << r.patient_id
+           << "| 医生:" << r.doctor_id
+           << "| 主诉:" << r.complaint
+           << "| 诊断:" << r.diagnosis
+           << "| 医嘱:" << r.orders
+           << "| 时间:" << r.create_time
+           << "| 建议住院:" << (r.need_hospitalize ? "是" : "否");
+        return os;
+    }
+};
+
+// 处方
+class Prescription {
+public:
+    string id;              // RX1, RX2, ...
+    string record_id;       // 关联病历
+    string patient_id;
+    string doctor_id;
+    int total_amount = 0;   // 总金额（分）
+    string status;          // 未缴费/已缴费/已取药
+    string create_time;
+
+    Prescription() = default;
+
+    friend ostream& operator<<(ostream& os, const Prescription& p) {
+        os << "ID:" << p.id
+           << "| 病历:" << p.record_id
+           << "| 患者:" << p.patient_id
+           << "| 医生:" << p.doctor_id
+           << "| 总金额:" << p.total_amount
+           << "| 状态:" << p.status
+           << "| 时间:" << p.create_time;
+        return os;
+    }
+};
+
+// 处方明细
+class PrescriptionItem {
+public:
+    string id;              // PI1, PI2, ...
+    string prescription_id;
+    string drug_id;
+    int quantity = 0;
+    string usage;           // 用法用量
+    int amount = 0;         // 该项金额（分）
+
+    PrescriptionItem() = default;
+
+    friend ostream& operator<<(ostream& os, const PrescriptionItem& item) {
+        os << "  明细ID:" << item.id
+           << "| 处方:" << item.prescription_id
+           << "| 药品:" << item.drug_id
+           << "| 数量:" << item.quantity
+           << "| 用法:" << item.usage
+           << "| 金额:" << item.amount << "分";
+        return os;
+    }
+};
+
+using PatientList = vector<unique_ptr<Patient>>; //类型别名，表示患者列表，使用 unique_ptr 管理内存
 using DoctorList = vector<unique_ptr<Doctor>>;
 using DepartmentList = vector<unique_ptr<Department>>;
 using DrugList = vector<unique_ptr<Drug>>;
 using BedList = vector<unique_ptr<Bed>>;
 using AppointmentList = vector<unique_ptr<Appointment>>;
+using MedicalRecordList = vector<unique_ptr<MedicalRecord>>;
+using PrescriptionList = vector<unique_ptr<Prescription>>;
+using PrescriptionItemList = vector<unique_ptr<PrescriptionItem>>;

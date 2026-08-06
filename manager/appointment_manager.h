@@ -1,6 +1,7 @@
 #pragma once
 
 #include "data_manager.h"
+#include "../model/entity.h"
 
 class AppointmentManager : public DataManager<Appointment> {
 public:

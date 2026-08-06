@@ -2,6 +2,7 @@
 
 #include "data_manager.h"
 #include "drug_manager.h"
+#include "../model/entity.h"
 
 // 处方明细管理器（内部使用，不独立实例化）
 class PrescriptionItemManager : public DataManager<PrescriptionItem> {

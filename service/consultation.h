@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../model/entity.h"
 #include "../manager/appointment_manager.h"
 #include "../manager/medical_record_manager.h"
 #include "../manager/prescription_manager.h"

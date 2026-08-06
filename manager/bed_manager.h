@@ -2,6 +2,7 @@
 
 #include "data_manager.h"
 #include "dept_manager.h"
+#include "../model/entity.h"
 
 class BedManager : public DataManager<Bed> {
 public:
