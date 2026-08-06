@@ -87,7 +87,7 @@ public:
     string dept_ids;        // 科室ID，逗号分隔；空串表示通用药品
     int max_stock = 0;      // 最大库存，用于预留自动计算预警阈值接口
 
-    Drug() = default;
+    Drug() = default; //默认构造函数
 
     friend ostream& operator<<(ostream& os, const Drug& d) {
         os << "ID: " << d.id
@@ -131,7 +131,59 @@ public:
     }
 };
 
+// 床位
+class Bed {
+public:
+    string id;              // B1, B2, ...
+    string bed_number;      // 床号，如 "A-101"
+    string dept_id;         // 所属科室ID
+    string type;            // 普通/急诊/重症
+    int daily_price = 0;    // 每日费用（分）
+    string status;          // 空闲/占用/清洁中
+    string patient_id;      // 当前占用患者ID（空=空闲）
+
+    Bed() = default;
+
+    friend ostream& operator<<(ostream& os, const Bed& b) {
+        os << "ID:" << b.id
+           << "| 床号:" << b.bed_number
+           << "| 科室ID:" << b.dept_id
+           << "| 类型:" << b.type
+           << "| 日费:" << b.daily_price
+           << "| 状态:" << b.status
+           << "| 患者:" << (b.patient_id.empty() ? "-" : b.patient_id);
+        return os;
+    }
+};
+
+// 挂号单
+class Appointment {
+public:
+    string id;              // AP1, AP2, ...
+    string patient_id;
+    string doctor_id;
+    string dept_id;
+    int fee = 0;            // 挂号费（分）
+    string status;          // 待诊/已接诊/已完成/已取消
+    string create_time;
+
+    Appointment() = default;
+
+    friend ostream& operator<<(ostream& os, const Appointment& a) {
+        os << "ID:" << a.id
+           << "| 患者:" << a.patient_id
+           << "| 医生:" << a.doctor_id
+           << "| 科室:" << a.dept_id
+           << "| 费用:" << a.fee
+           << "| 状态:" << a.status
+           << "| 时间:" << a.create_time;
+        return os;
+    }
+};
+
 using PatientList = vector<unique_ptr<Patient>>;
 using DoctorList = vector<unique_ptr<Doctor>>;
 using DepartmentList = vector<unique_ptr<Department>>;
 using DrugList = vector<unique_ptr<Drug>>;
+using BedList = vector<unique_ptr<Bed>>;
+using AppointmentList = vector<unique_ptr<Appointment>>;

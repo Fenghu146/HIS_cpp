@@ -12,13 +12,25 @@ add_executable(HIS_cpp
     utils/input.cpp
     utils/validator.h
     utils/validator.cpp
-    data/data_manager.h
-    data/patient_manager.h
-    data/patient_manager.cpp
-    data/doctor_manager.h
-    data/doctor_manager.cpp
-    data/dept_manager.h
-    data/dept_manager.cpp
-    data/drug_manager.h
-    data/drug_manager.cpp
+    manager/data_manager.h
+    manager/patient_manager.h
+    manager/patient_manager.cpp
+    manager/doctor_manager.h
+    manager/doctor_manager.cpp
+    manager/dept_manager.h
+    manager/dept_manager.cpp
+    manager/drug_manager.h
+    manager/drug_manager.cpp
+    manager/bed_manager.h
+    manager/bed_manager.cpp
+    manager/appointment_manager.h
+    manager/appointment_manager.cpp
+    manager/medical_record_manager.h
+    manager/medical_record_manager.cpp
+    manager/prescription_manager.h
+    manager/prescription_manager.cpp
+    service/registration.h
+    service/registration.cpp
+    service/consultation.h
+    service/consultation.cpp
 )

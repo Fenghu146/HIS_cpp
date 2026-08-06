@@ -13,6 +13,9 @@ out/
 .DS_Store
 Thumbs.db
 
+# Runtime data files
+data/*.txt
+
 # Compiled
 *.o
 *.a
