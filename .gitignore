@@ -23,6 +23,7 @@ data/*.txt
 *.dylib
 *.exe
 *.out
+his
 
 # Keep source
 !*.cpp
