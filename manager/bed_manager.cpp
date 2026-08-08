@@ -107,7 +107,7 @@ void BedManager::registerBed(DepartmentManager& deptMgr) {
     }
 
     b->id = generateId();
-    b->status = "空闲";
+    b->status = BedStatus::FREE;
     b->patient_id = "";
 
     list.push_back(std::move(b));
@@ -133,7 +133,7 @@ bool BedManager::deleteBed(const string& id) {
         cout << "未找到床位\n";
         return false;
     }
-    if (b->status != "空闲") {
+    if (b->status != BedStatus::FREE) {
         cout << "[错误] 床位当前状态为 " << b->status << "，无法删除！\n";
         return false;
     }
@@ -180,11 +180,11 @@ bool BedManager::occupyBed(const string& id, const string& patient_id) {
         cout << "未找到床位\n";
         return false;
     }
-    if (b->status != "空闲") {
+    if (b->status != BedStatus::FREE) {
         cout << "[错误] 床位 " << b->bed_number << " 当前" << b->status << "，无法占用！\n";
         return false;
     }
-    b->status = "占用";
+    b->status = BedStatus::OCCUPIED;
     b->patient_id = patient_id;
     save();
     return true;
@@ -196,7 +196,7 @@ bool BedManager::releaseBed(const string& id) {
         cout << "未找到床位\n";
         return false;
     }
-    b->status = "清洁中";
+    b->status = BedStatus::CLEANING;
     b->patient_id = "";
     save();
     return true;
@@ -213,7 +213,7 @@ int BedManager::countBedsByDept(const string& dept_id) const {
 int BedManager::countAvailableBedsByDept(const string& dept_id) const {
     int count = 0;
     for (auto& b : list) {
-        if (b->dept_id == dept_id && b->status == "空闲") count++;
+        if (b->dept_id == dept_id && b->status == BedStatus::FREE) count++;
     }
     return count;
 }

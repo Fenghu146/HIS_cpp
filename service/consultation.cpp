@@ -8,7 +8,7 @@ void ConsultationService::showWaitingList(AppointmentManager& appointmentMgr, co
     bool found = false;
     int idx = 1;
     for (auto& a : appointmentMgr.list) {
-        if (a->doctor_id == doctor_id && a->status == "待诊") {
+        if (a->doctor_id == doctor_id && a->status == AppointmentStatus::WAITING) {
             cout << "  " << idx++ << ". " << *a << endl;
             found = true;
         }
@@ -44,7 +44,7 @@ bool ConsultationService::prescribe(
         }
         cout << "  0. 完成开方\n";
         cout << "请选择药品序号：";
-        int drugIdx = getValidChoice(0, static_cast<int>(drugMgr.list.size()));
+        int drugIdx = getValidChoice(0, static_cast<int>(drugMgr.list.size())); //static_cast<int> 用于将 size_t 转换为 int，避免编译器警告
         if (drugIdx == 0) break;
 
         Drug* drug = drugMgr.list[drugIdx - 1].get();
@@ -111,7 +111,7 @@ bool ConsultationService::consultPatient(
     // 1. 收集待诊患者
     vector<Appointment*> waiting;
     for (auto& a : appointmentMgr.list) {
-        if (a->doctor_id == doctor_id && a->status == "待诊") {
+        if (a->doctor_id == doctor_id && a->status == AppointmentStatus::WAITING) {
             waiting.push_back(a.get());
         }
     }
@@ -141,7 +141,7 @@ bool ConsultationService::consultPatient(
         cout << "请输入主诉：";
         inputLine(complaint);
         if (!hasNoPipe(complaint)) cout << "[错误] 不能包含 | 字符！\n";
-    } while (!hasNoPipe(complaint));
+    } while (!hasNoPipe(complaint)); //安全输入
 
     do {
         cout << "请输入诊断：";
@@ -167,7 +167,7 @@ bool ConsultationService::consultPatient(
     cout << "病历已创建，ID：" << record->id << endl;
 
     // 6. 更新挂号单状态
-    appointmentMgr.updateStatus(apt->id, "已接诊");
+    appointmentMgr.updateStatus(apt->id, AppointmentStatus::IN_CONSULT);
 
     // 7. 是否开处方
     cout << "是否开处方？(y/n)：";
@@ -176,7 +176,7 @@ bool ConsultationService::consultPatient(
     }
 
     // 8. 完成就诊
-    appointmentMgr.updateStatus(apt->id, "已完成");
+    appointmentMgr.updateStatus(apt->id, AppointmentStatus::COMPLETED);
     cout << "\n就诊完成！\n";
 
     if (needHosp) {

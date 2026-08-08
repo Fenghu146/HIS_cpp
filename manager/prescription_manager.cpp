@@ -210,7 +210,7 @@ Prescription* PrescriptionManager::addPrescription(const string& record_id,
     p->record_id = record_id;
     p->patient_id = patient_id;
     p->doctor_id = doctor_id;
-    p->status = "未缴费";
+    p->status = PrescriptionStatus::UNPAID;
     p->create_time = "2026-08-06";
 
     // 计算总金额

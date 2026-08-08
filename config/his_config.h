@@ -46,3 +46,29 @@ constexpr const char* ADMIN_PASSWORD = "123456";
 //6、通用分隔符定义
 constexpr const char* FILE_SEP = "|"; //定义一个编译期常量分隔符字符串，用于统一表示文本数据文件的字段分隔符
 constexpr int MENU_LINE_LEN = 56;
+
+//7、状态常量定义 —— 统一管理状态字符串，避免魔法字符串散落，编译期检查拼写
+namespace AppointmentStatus {
+    constexpr const char* WAITING    = "待诊";
+    constexpr const char* IN_CONSULT = "已接诊";
+    constexpr const char* COMPLETED  = "已完成";
+    constexpr const char* CANCELLED  = "已取消";
+}
+
+namespace PrescriptionStatus {
+    constexpr const char* UNPAID    = "未缴费";
+    constexpr const char* PAID      = "已缴费";
+    constexpr const char* DISPENSED = "已取药";
+}
+
+namespace BedStatus {
+    constexpr const char* FREE     = "空闲";
+    constexpr const char* OCCUPIED = "占用";
+    constexpr const char* CLEANING = "清洁中";
+}
+
+namespace BedType {
+    constexpr const char* NORMAL    = "普通";
+    constexpr const char* EMERGENCY = "急诊";
+    constexpr const char* ICU       = "重症";
+}

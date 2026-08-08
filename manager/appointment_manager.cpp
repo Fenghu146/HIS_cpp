@@ -118,7 +118,7 @@ Appointment* AppointmentManager::addAppointment(const string& patient_id,
     a->doctor_id = doctor_id;
     a->dept_id = dept_id;
     a->fee = fee;
-    a->status = "待诊";
+    a->status = AppointmentStatus::WAITING;
     a->create_time = "2026-08-06";  // 简化处理
     Appointment* raw = a.get();
     list.push_back(std::move(a));

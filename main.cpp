@@ -251,7 +251,7 @@ void showRegistrationMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
                 break;
             }
             case 3: appointmentMgr.listAppointment(); break;
-            case 4: appointmentMgr.listByStatus("待诊"); break;
+            case 4: appointmentMgr.listByStatus(AppointmentStatus::WAITING); break;
             case 0: return;
         }
     }
