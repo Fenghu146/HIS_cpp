@@ -17,6 +17,7 @@ constexpr char ID_APPOINTMENT = 'A';
 constexpr char ID_RECORD = 'R';
 constexpr char ID_PRESCRIPTION = 'X';
 constexpr char ID_PRESCRIPTION_ITEM = 'I';
+constexpr char ID_SHORTAGE = 'S';
 
 //3、数据文件路径定义
 constexpr const char* FILE_PATIENT = "data/patient.txt";
@@ -28,6 +29,7 @@ constexpr const char* FILE_APPOINTMENT = "data/appointment.txt";
 constexpr const char* FILE_RECORD = "data/record.txt";
 constexpr const char* FILE_PRESCRIPTION = "data/prescription.txt";
 constexpr const char* FILE_PRESCRIPTION_ITEM = "data/prescription_item.txt";
+constexpr const char* FILE_SHORTAGE = "data/shortage.txt";
 
 //4、业务默认值定义
 constexpr int REGISTRATION_FEE = 1000;
@@ -48,7 +50,7 @@ constexpr const char* FILE_SEP = "|"; //定义一个编译期常量分隔符字�
 constexpr int MENU_LINE_LEN = 56;
 
 //7、状态常量定义 —— 统一管理状态字符串，避免魔法字符串散落，编译期检查拼写
-namespace AppointmentStatus {
+namespace AppointmentStatus { //防止魔法字符串，使用命名空间封装状态常量
     constexpr const char* WAITING    = "待诊";
     constexpr const char* IN_CONSULT = "已接诊";
     constexpr const char* COMPLETED  = "已完成";
@@ -71,4 +73,19 @@ namespace BedType {
     constexpr const char* NORMAL    = "普通";
     constexpr const char* EMERGENCY = "急诊";
     constexpr const char* ICU       = "重症";
+}
+
+//8、缺药登记相关常量
+namespace ShortageStatus {
+    constexpr const char* PENDING   = "待处理";
+    constexpr const char* FULFILLED = "已补货";
+    constexpr const char* RESOLVED  = "已处理";
+}
+namespace ShortageUrgencyText {
+    constexpr const char* URGENT = "紧急";
+    constexpr const char* NORMAL = "普通";
+}
+namespace ShortageSource {
+    constexpr const char* DISPENSE = "取药";
+    constexpr const char* REPORT   = "主动报告";
 }

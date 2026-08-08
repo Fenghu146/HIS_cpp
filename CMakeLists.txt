@@ -7,6 +7,7 @@ add_executable(HIS_cpp
     main.cpp
     config/his_config.h
     model/entity.h
+    model/shortage.h
     model/crud.h
     utils/input.h
     utils/input.cpp
@@ -29,8 +30,13 @@ add_executable(HIS_cpp
     manager/medical_record_manager.cpp
     manager/prescription_manager.h
     manager/prescription_manager.cpp
+    manager/shortage_manager.cpp
     service/registration.h
     service/registration.cpp
     service/consultation.h
     service/consultation.cpp
+    service/payment.h
+    service/payment.cpp
+    service/shortage_service.h
+    service/shortage_service.cpp
 )

@@ -9,6 +9,9 @@
 #include "manager/prescription_manager.h"
 #include "service/registration.h"
 #include "service/consultation.h"
+#include "service/payment.h"
+#include "service/shortage_service.h"
+#include "manager/shortage_manager.h"
 #include "utils/input.h"
 using namespace std;
 
@@ -261,7 +264,8 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
                     MedicalRecordManager& recordMgr,
                     PrescriptionManager& prescriptionMgr,
                     DrugManager& drugMgr,
-                    DepartmentManager& deptMgr) {
+                    DepartmentManager& deptMgr,
+                    ShortageManager& shortageMgr) {
     // 输入医生ID
     cout << "请输入医生ID：";
     string doctorId;
@@ -273,9 +277,10 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
         cout << "2. 接诊\n";
         cout << "3. 我的病历记录\n";
         cout << "4. 我的处方记录\n";
+        cout << "5. 缺药登记\n";
         cout << "0. 返回\n";
 
-        int choice = getValidChoice(0, 4);
+        int choice = getValidChoice(0, 5);
         switch (choice) {
             case 1:
                 ConsultationService::showWaitingList(appointmentMgr, doctorId);
@@ -290,6 +295,19 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
             case 4:
                 prescriptionMgr.listByDoctor(doctorId);
                 break;
+            case 5: {
+                // 缺药登记子菜单
+                cout << "\n--- 缺药登记 ---\n";
+                cout << "1. 查看待办缺药清单\n";
+                cout << "2. 主动报告库存不足\n";
+                cout << "0. 返回\n";
+                int sub = getValidChoice(0, 2);
+                switch (sub) {
+                    case 1: ShortageService::viewPendingShortages(shortageMgr); break;
+                    case 2: ShortageService::reportShortage(drugMgr, shortageMgr); break;
+                }
+                break;
+            }
             case 0: return;
         }
     }
@@ -298,6 +316,8 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
 void showPatientMenu(PatientManager& patientMgr,
                      MedicalRecordManager& recordMgr,
                      PrescriptionManager& prescriptionMgr,
+                     DrugManager& drugMgr,
+                     ShortageManager& shortageMgr,
                      AppointmentManager& appointmentMgr) {
     // 输入患者ID
     cout << "请输入患者ID：";
@@ -315,9 +335,11 @@ void showPatientMenu(PatientManager& patientMgr,
         cout << "1. 我的病历\n";
         cout << "2. 我的处方\n";
         cout << "3. 充值\n";
+        cout << "4. 缴费\n";
+        cout << "5. 取药\n";
         cout << "0. 返回\n";
 
-        int choice = getValidChoice(0, 3);
+        int choice = getValidChoice(0, 5);
         switch (choice) {
             case 1:
                 recordMgr.listByPatient(patientId);
@@ -331,6 +353,48 @@ void showPatientMenu(PatientManager& patientMgr,
                 patientMgr.recharge(patientId, amt);
                 break;
             }
+            case 4:
+                PaymentService::payPrescription(patientMgr, prescriptionMgr, drugMgr, patientId);
+                break;
+            case 5:
+                PaymentService::dispensePrescription(prescriptionMgr, drugMgr, shortageMgr, patientId);
+                break;
+            case 0: return;
+        }
+    }
+}
+
+void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, ShortageManager& shortageMgr) {
+    while (true) {
+        cout << "\n=== 药房管理 ===\n";
+        cout << "1. 药品入库\n";
+        cout << "2. 药品出库\n";
+        cout << "3. 库存预警\n";
+        cout << "4. 缺药待办清单\n";
+        cout << "5. 处理缺药\n";
+        cout << "0. 返回\n";
+
+        int choice = getValidChoice(0, 5);
+        switch (choice) {
+            case 1: {
+                cout << "请输入药品ID：";
+                string id; inputLine(id);
+                cout << "请输入入库数量：";
+                string amt; inputLine(amt);
+                drugMgr.stockIn(id, stoi(amt));
+                break;
+            }
+            case 2: {
+                cout << "请输入药品ID：";
+                string id; inputLine(id);
+                cout << "请输入出库数量：";
+                string amt; inputLine(amt);
+                drugMgr.stockOut(id, stoi(amt));
+                break;
+            }
+            case 3: drugMgr.warningList(deptMgr); break;
+            case 4: ShortageService::viewPendingShortages(shortageMgr); break;
+            case 5: ShortageService::fulfillShortage(shortageMgr, drugMgr); break;
             case 0: return;
         }
     }
@@ -345,6 +409,7 @@ int main() {
     AppointmentManager appointmentMgr;
     MedicalRecordManager recordMgr;
     PrescriptionManager prescriptionMgr;
+    ShortageManager shortageMgr;
     patientMgr.load();
     doctorMgr.load();
     deptMgr.load();
@@ -353,6 +418,7 @@ int main() {
     appointmentMgr.load();
     recordMgr.load();
     prescriptionMgr.load();
+    shortageMgr.load();
 
     cout << "=== 医院信息管理系统 ===\n";
     while (true) {
@@ -365,9 +431,10 @@ int main() {
         cout << "6. 挂号\n";
         cout << "7. 医生入口\n";
         cout << "8. 患者入口\n";
+        cout << "9. 药房管理\n";
         cout << "0. 退出\n";
 
-        int choice = getValidChoice(0, 8);
+        int choice = getValidChoice(0, 9);
         switch (choice) {
             case 1: showPatientMenu(patientMgr); break;
             case 2: showDoctorMenu(doctorMgr); break;
@@ -375,8 +442,9 @@ int main() {
             case 4: showDrugMenu(drugMgr, deptMgr); break;
             case 5: showBedMenu(bedMgr, deptMgr); break;
             case 6: showRegistrationMenu(patientMgr, doctorMgr, deptMgr, appointmentMgr); break;
-            case 7: showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr); break;
-            case 8: showPatientMenu(patientMgr, recordMgr, prescriptionMgr, appointmentMgr); break;
+            case 7: showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr, shortageMgr); break;
+            case 8: showPatientMenu(patientMgr, recordMgr, prescriptionMgr, drugMgr, shortageMgr, appointmentMgr); break;
+            case 9: showPharmacyMenu(drugMgr, deptMgr, shortageMgr); break;
             case 0: return 0;
         }
     }
