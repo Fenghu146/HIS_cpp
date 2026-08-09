@@ -5,6 +5,7 @@ int DoctorManager::next_id = 1;
 #include "../model/crud.h"
 #include "../utils/input.h"
 #include "../utils/validator.h"
+#include "../utils/hash.h"
 
 void DoctorManager::load() {
     ifstream in(filename);
@@ -22,6 +23,16 @@ void DoctorManager::load() {
         getline(ss, d->specialty, '|');
         getline(ss, d->account, '|');
         getline(ss, d->password, '|');
+        // 兼容旧格式：读取剩余部分，判断是否包含 password_hash
+        string remainder;
+        getline(ss, remainder);
+        if (!remainder.empty()) {
+            // 新格式：有 password_hash
+            d->password_hash = remainder;
+        } else {
+            // 旧格式：无 password_hash
+            d->password_hash = "";
+        }
 
         list.push_back(std::move(d));
     }
@@ -45,7 +56,8 @@ void DoctorManager::save() {
             << d->dept_name << '|'
             << d->specialty << '|'
             << d->account << '|'
-            << d->password << '\n';
+            << d->password << '|'
+            << d->password_hash << '\n';
     }
     out.close();
 }
@@ -53,11 +65,11 @@ void DoctorManager::save() {
 void DoctorManager::registerDoctor() {
     auto d = make_unique<Doctor>();
 
-    cout << "请输入姓名："; inputLine(d->name); cerr << "[DBG] name=(" << d->name << ")" << endl;
-    cout << "请输入科室："; inputLine(d->dept_name); cerr << "[DBG] dept_name=(" << d->dept_name << ")" << endl;
-    cout << "请输入擅长领域："; inputLine(d->specialty); cerr << "[DBG] specialty=(" << d->specialty << ")" << endl;
-    cout << "请输入账号："; inputLine(d->account); cerr << "[DBG] account=(" << d->account << ")" << endl;
-    cout << "请输入密码："; inputLine(d->password); cerr << "[DBG] password=(" << d->password << ")" << endl;
+    cout << "请输入姓名："; inputLine(d->name);
+    cout << "请输入科室："; inputLine(d->dept_name);
+    cout << "请输入擅长领域："; inputLine(d->specialty);
+    cout << "请输入账号："; inputLine(d->account);
+    cout << "请输入密码："; inputLine(d->password);
 
     string newId = generateId();
     d->id = newId;
@@ -86,6 +98,45 @@ void DoctorManager::listDoctor() {
     for (auto& d : list) {
         cout << *d << endl;
     }
+}
+
+bool DoctorManager::validatePassword(const string& account, const string& password) {
+    Doctor* d = nullptr;
+    for (auto& doc : list) {
+        if (doc->account == account) { d = doc.get(); break; }
+    }
+    if (!d) return false;
+
+    if (!d->password_hash.empty()) {
+        return sha256(password) == d->password_hash;
+    } else {
+        if (d->password == password) {
+            d->password_hash = sha256(password);
+            save();
+            return true;
+        }
+        return false;
+    }
+}
+
+bool DoctorManager::changePassword(const string& account, const string& old_pwd, const string& new_pwd) {
+    Doctor* d = nullptr;
+    for (auto& doc : list) {
+        if (doc->account == account) { d = doc.get(); break; }
+    }
+    if (!d) {
+        cout << "[错误] 未找到账号" << account << endl;
+        return false;
+    }
+    if (!validatePassword(account, old_pwd)) {
+        cout << "[错误] 原密码不正确！" << endl;
+        return false;
+    }
+    d->password = new_pwd;
+    d->password_hash = sha256(new_pwd);
+    save();
+    cout << "密码修改成功！" << endl;
+    return true;
 }
 
 int DoctorManager::countDoctorsInDept(const string& dept_name) const {

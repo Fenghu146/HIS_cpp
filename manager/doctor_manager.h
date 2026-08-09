@@ -15,6 +15,11 @@ public:
     void listDoctor();
     int countDoctorsInDept(const string& dept_name) const;
 
+    // 验证密码（内部处理哈希迁移）
+    bool validatePassword(const string& account, const string& password);
+    // 修改密码
+    bool changePassword(const string& account, const string& old_pwd, const string& new_pwd);
+
     DoctorManager() : DataManager(FILE_DOCTOR){}
 
     // 生成唯一ID: 前缀+自增序号，例 D1, D2, D3...

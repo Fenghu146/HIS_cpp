@@ -17,6 +17,7 @@ public:
     string id_card;
     long long balance = 0;
     string pin;
+    string pin_hash;       // SHA256 哈希，空串表示未迁移
     float insurance_rate = 0.0f;
 
     Patient() = default;
@@ -40,6 +41,7 @@ public:
     string specialty;
     string account;
     string password;
+    string password_hash;  // SHA256 哈希，空串表示未迁移
 
     Doctor() = default;
 

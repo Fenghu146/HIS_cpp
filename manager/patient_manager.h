@@ -15,6 +15,11 @@ public:
     void listPatient();
     bool recharge(const string& id,long long amount);
 
+    // 验证 PIN（内部处理哈希迁移）
+    bool validatePin(const string& id, const string& pin);
+    // 修改 PIN
+    bool changePin(const string& id, const string& old_pin, const string& new_pin);
+
     PatientManager() : DataManager(FILE_PATIENT){}
 
     // 生成唯一ID: 前缀+自增序号，例 P1, P2, P3...

@@ -25,8 +25,13 @@ data/*.txt
 *.out
 his
 
+# Test scripts
+*.exp
+
 # Keep source
 !*.cpp
 !*.h
 !*.hpp
 !CMakeLists.txt
+# Added by code-review-graph
+.code-review-graph/

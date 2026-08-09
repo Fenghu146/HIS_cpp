@@ -51,10 +51,10 @@ void DepartmentManager::save() {
 void DepartmentManager::registerDepartment() {
     auto d = make_unique<Department>();
 
-    cout << "请输入科室名称："; inputLine(d->name); cerr << "[DBG] name=(" << d->name << ")" << endl;
-    cout << "请输入科室简介："; inputLine(d->description); cerr << "[DBG] description=(" << d->description << ")" << endl;
-    cout << "请输入负责人姓名："; inputLine(d->director_name); cerr << "[DBG] director=(" << d->director_name << ")" << endl;
-    cout << "请输入科室位置："; inputLine(d->location); cerr << "[DBG] location=(" << d->location << ")" << endl;
+    cout << "请输入科室名称："; inputLine(d->name);
+    cout << "请输入科室简介："; inputLine(d->description);
+    cout << "请输入负责人姓名："; inputLine(d->director_name);
+    cout << "请输入科室位置："; inputLine(d->location);
 
     d->id = generateId();
     string newId = d->id;

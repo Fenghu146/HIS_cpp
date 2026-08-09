@@ -39,4 +39,8 @@ add_executable(HIS_cpp
     service/payment.cpp
     service/shortage_service.h
     service/shortage_service.cpp
+    service/auth.h
+    service/auth.cpp
+    service/log.h
+    service/log.cpp
 )
