@@ -32,6 +32,13 @@ his
 !*.cpp
 !*.h
 !*.hpp
+!*.md
 !CMakeLists.txt
+
+# Claude Code (personal IDE config)
+.claude/
+.mcp.json
+CLAUDE.md
+
 # Added by code-review-graph
 .code-review-graph/
