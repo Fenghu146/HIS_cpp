@@ -10,8 +10,11 @@ class DataManager {
 public:
     string filename;
     vector<unique_ptr<T>> list;
+    bool dirty = false;
 
-    explicit DataManager(const string& fname) : filename(fname) {} //阻止编译器自动把 string 转成 DataManager 对象
+    explicit DataManager(const string& fname) : filename(fname) {}
+
+    void markDirty() { dirty = true; }
 
     virtual void load() = 0;
     virtual void save() = 0;

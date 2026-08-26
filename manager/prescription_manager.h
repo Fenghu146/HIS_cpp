@@ -3,6 +3,7 @@
 #include "data_manager.h"
 #include "drug_manager.h"
 #include "../model/entity.h"
+#include <unordered_map>
 
 // 处方明细管理器（内部使用，不独立实例化）
 class PrescriptionItemManager : public DataManager<PrescriptionItem> {
@@ -17,11 +18,18 @@ public:
     void listByPrescription(const string& prescription_id);
     void listAll();
 
+    // 按处方 ID 直接索引查询（O(1)）
+    const vector<PrescriptionItem*>& getItemsByRxId(const string& prescription_id) const;
+
     PrescriptionItemManager() : DataManager(FILE_PRESCRIPTION_ITEM){}
 
     string generateId() {
         return "PI" + to_string(next_id++);
     }
+
+private:
+    unordered_map<string, vector<PrescriptionItem*>> by_prescription;
+    void buildIndex();
 };
 
 // 处方管理器

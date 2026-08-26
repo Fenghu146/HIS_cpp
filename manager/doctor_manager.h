@@ -18,7 +18,7 @@ public:
     // 验证密码（内部处理哈希迁移）
     bool validatePassword(const string& account, const string& password);
     // 修改密码
-    bool changePassword(const string& account, const string& old_pwd, const string& new_pwd);
+    bool changePassword(const string& id, const string& old_pwd, const string& new_pwd);
 
     DoctorManager() : DataManager(FILE_DOCTOR){}
 

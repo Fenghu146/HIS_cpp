@@ -119,20 +119,24 @@ bool DoctorManager::validatePassword(const string& account, const string& passwo
     }
 }
 
-bool DoctorManager::changePassword(const string& account, const string& old_pwd, const string& new_pwd) {
+bool DoctorManager::changePassword(const string& id, const string& old_pwd, const string& new_pwd) {
     Doctor* d = nullptr;
     for (auto& doc : list) {
-        if (doc->account == account) { d = doc.get(); break; }
+        if (doc->id == id) { d = doc.get(); break; }
     }
     if (!d) {
-        cout << "[错误] 未找到账号" << account << endl;
+        cout << "[错误] 未找到医生 " << id << endl;
         return false;
     }
-    if (!validatePassword(account, old_pwd)) {
+    // 验证旧密码（支持哈希或明文）
+    bool valid = !d->password_hash.empty()
+        ? (sha256(old_pwd) == d->password_hash)
+        : (d->password == old_pwd);
+    if (!valid) {
         cout << "[错误] 原密码不正确！" << endl;
         return false;
     }
-    d->password = new_pwd;
+    d->password.clear();
     d->password_hash = sha256(new_pwd);
     save();
     cout << "密码修改成功！" << endl;

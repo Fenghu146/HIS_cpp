@@ -68,6 +68,7 @@ bool PaymentService::payPrescription(
 
     // 扣费 + 更新状态
     p->balance -= rx->total_amount;
+    patientMgr.markDirty();
     patientMgr.save();
     prescriptionMgr.updateStatus(rx->id, PrescriptionStatus::PAID);
 
@@ -107,13 +108,8 @@ bool PaymentService::dispensePrescription(
 
     Prescription* rx = paid[idx - 1];
 
-    // 收集该处方的明细
-    vector<PrescriptionItem*> items;
-    for (auto& item : prescriptionMgr.itemMgr.list) {
-        if (item->prescription_id == rx->id) {
-            items.push_back(item.get());
-        }
-    }
+    // 收集该处方的明细（O(1) 索引查询）
+    auto& items = prescriptionMgr.itemMgr.getItemsByRxId(rx->id);
 
     if (items.empty()) {
         cout << "[错误] 处方 " << rx->id << " 无明细记录。\n";

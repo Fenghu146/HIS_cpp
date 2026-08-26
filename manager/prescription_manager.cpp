@@ -30,6 +30,8 @@ void PrescriptionItemManager::load() {
     }
     in.close();
 
+    buildIndex();
+
     for (auto& item : list) {
         if (item->id.length() > 2 && item->id[0] == 'P' && item->id[1] == 'I') {
             int num = stoi(item->id.substr(2));
@@ -64,8 +66,22 @@ PrescriptionItem* PrescriptionItemManager::addItem(const string& prescription_id
     item->amount = amount;
     PrescriptionItem* raw = item.get();
     list.push_back(std::move(item));
+    by_prescription[prescription_id].push_back(raw);
     save();
     return raw;
+}
+
+const vector<PrescriptionItem*>& PrescriptionItemManager::getItemsByRxId(const string& prescription_id) const {
+    static const vector<PrescriptionItem*> empty;
+    auto it = by_prescription.find(prescription_id);
+    return (it != by_prescription.end()) ? it->second : empty;
+}
+
+void PrescriptionItemManager::buildIndex() {
+    by_prescription.clear();
+    for (auto& item : list) {
+        by_prescription[item->prescription_id].push_back(item.get());
+    }
 }
 
 void PrescriptionItemManager::listByPrescription(const string& prescription_id) {
@@ -221,13 +237,13 @@ Prescription* PrescriptionManager::addPrescription(const string& record_id,
 
     Prescription* raw = p.get();
     list.push_back(std::move(p));
-    save();
 
     // 添加明细
     for (auto& item : items) {
         itemMgr.addItem(raw->id, item.drug_id, item.quantity, item.usage, item.amount);
     }
 
+    save();
     return raw;
 }
 
@@ -239,14 +255,12 @@ void PrescriptionManager::displayPrescription(const string& prescription_id, Dru
     }
     cout << *p << endl;
     cout << "  处方明细：\n";
-    for (auto& item : itemMgr.list) {
-        if (item->prescription_id == prescription_id) {
-            Drug* d = drugMgr.findDrug(item->drug_id);
-            string drugName = d ? d->general_name : item->drug_id;
-            cout << "    药品：" << drugName
-                 << " | 数量：" << item->quantity
-                 << " | 用法：" << item->usage
-                 << " | 金额：" << item->amount << "分" << endl;
-        }
+    for (auto* item : itemMgr.getItemsByRxId(prescription_id)) {
+        Drug* d = drugMgr.findDrug(item->drug_id);
+        string drugName = d ? d->general_name : item->drug_id;
+        cout << "    药品：" << drugName
+             << " | 数量：" << item->quantity
+             << " | 用法：" << item->usage
+             << " | 金额：" << item->amount << "分" << endl;
     }
 }

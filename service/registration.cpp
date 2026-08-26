@@ -83,6 +83,7 @@ bool RegistrationService::registerPatient(
 
     // 6. 扣费
     p->balance -= REGISTRATION_FEE;
+    patientMgr.markDirty();
     patientMgr.save();
 
     // 7. 生成挂号单

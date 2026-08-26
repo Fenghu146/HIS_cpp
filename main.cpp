@@ -11,6 +11,7 @@
 #include "service/consultation.h"
 #include "service/payment.h"
 #include "service/shortage_service.h"
+#include "service/hospitalization_service.h"
 #include "manager/shortage_manager.h"
 #include "service/session.h"
 #include "service/auth.h"
@@ -29,14 +30,17 @@ void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, Shortage
 void showPatientMenu(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                      PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                      ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                     DoctorManager& doctorMgr, DepartmentManager& deptMgr);
+                     DoctorManager& doctorMgr, DepartmentManager& deptMgr,
+                     BedManager& bedMgr);
 void showDoctorMenu(AppointmentManager& appointmentMgr, MedicalRecordManager& recordMgr,
-                    PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
-                    DepartmentManager& deptMgr, ShortageManager& shortageMgr);
+                     PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                     DepartmentManager& deptMgr, ShortageManager& shortageMgr,
+                     DoctorManager& doctorMgr, BedManager& bedMgr);
 void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                       PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                       ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                      DoctorManager& doctorMgr, DepartmentManager& deptMgr);
+                      DoctorManager& doctorMgr, DepartmentManager& deptMgr,
+                      BedManager& bedMgr);
 void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMgr,
                      MedicalRecordManager& recordMgr, PrescriptionManager& prescriptionMgr,
                      DrugManager& drugMgr, DepartmentManager& deptMgr,
@@ -58,9 +62,10 @@ void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
         cout << "4. 药品管理\n";
         cout << "5. 床位管理\n";
         cout << "6. 药房管理\n";
+        cout << "7. 住院管理\n";
         cout << "0. 退出登录\n";
 
-        int choice = getValidChoice(0, 6);
+        int choice = getValidChoice(0, 7);
         switch (choice) {
             case 1: showPatientMgmtMenu(patientMgr); break;
             case 2: showDoctorMgmtMenu(doctorMgr); break;
@@ -68,6 +73,7 @@ void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
             case 4: showDrugMgmtMenu(drugMgr, deptMgr); break;
             case 5: showBedMgmtMenu(bedMgr, deptMgr); break;
             case 6: showPharmacyMenu(drugMgr, deptMgr, shortageMgr); break;
+            case 7: HospitalizationService::listHospitalized(bedMgr); break;
             case 0:
                 LogService::logLogout("admin", Session::getInstance()->getUserId());
                 Session::getInstance()->logout();
@@ -348,7 +354,8 @@ void showPatientMenu(PatientManager& patientMgr,
                      ShortageManager& shortageMgr,
                      AppointmentManager& appointmentMgr,
                      DoctorManager& doctorMgr,
-                     DepartmentManager& deptMgr) {
+                     DepartmentManager& deptMgr,
+                     BedManager& bedMgr) {
     string patientId = Session::getInstance()->getUserId();
     Patient* p = patientMgr.findPatient(patientId);
     if (!p) {
@@ -366,9 +373,10 @@ void showPatientMenu(PatientManager& patientMgr,
         cout << "5. 缴费\n";
         cout << "6. 取药\n";
         cout << "7. 修改密码\n";
+        cout << "8. 办理住院\n";
         cout << "0. 退出登录\n";
 
-        int choice = getValidChoice(0, 7);
+        int choice = getValidChoice(0, 8);
         switch (choice) {
             case 1:
                 RegistrationService::registerPatient(patientMgr, doctorMgr, deptMgr, appointmentMgr);
@@ -399,6 +407,9 @@ void showPatientMenu(PatientManager& patientMgr,
                 patientMgr.changePin(patientId, oldPin, newPin);
                 break;
             }
+            case 8:
+                HospitalizationService::admitPatient(patientMgr, bedMgr, recordMgr, doctorMgr, patientId);
+                break;
             case 0:
                 LogService::logLogout("patient", patientId);
                 Session::getInstance()->logout();
@@ -414,7 +425,9 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
                     PrescriptionManager& prescriptionMgr,
                     DrugManager& drugMgr,
                     DepartmentManager& deptMgr,
-                    ShortageManager& shortageMgr) {
+                    ShortageManager& shortageMgr,
+                    DoctorManager& doctorMgr,
+                    BedManager& bedMgr) {
     string doctorId = Session::getInstance()->getUserId();
 
     while (true) {
@@ -459,8 +472,7 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
                 string oldPwd; inputLine(oldPwd);
                 cout << "请输入新密码：";
                 string newPwd; inputLine(newPwd);
-                // 需要通过 account 修改，先找到当前医生
-                cout << "功能开发中...\n";
+                doctorMgr.changePassword(doctorId, oldPwd, newPwd);
                 break;
             }
             case 0:
@@ -476,7 +488,8 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
 void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                       PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                       ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                      DoctorManager& doctorMgr, DepartmentManager& deptMgr) {
+                      DoctorManager& doctorMgr, DepartmentManager& deptMgr,
+                      BedManager& bedMgr) {
     cout << "\n--- 患者登录 ---\n";
     cout << "患者ID：";
     string id; inputLine(id);
@@ -487,9 +500,11 @@ void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMg
         Patient* p = patientMgr.findPatient(id);
         Session::getInstance()->login("patient", id, p ? p->name : "");
         LogService::logLogin("patient", id, true);
+        // 若发生了明文→哈希迁移，持久化写入
+        if (patientMgr.dirty) patientMgr.save();
         cout << "登录成功！\n";
         showPatientMenu(patientMgr, recordMgr, prescriptionMgr, drugMgr, shortageMgr,
-                        appointmentMgr, doctorMgr, deptMgr);
+                        appointmentMgr, doctorMgr, deptMgr, bedMgr);
     } else {
         LogService::logLogin("patient", id, false);
         cout << "登录失败！ID 或密码错误。\n";
@@ -499,7 +514,7 @@ void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMg
 void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMgr,
                      MedicalRecordManager& recordMgr, PrescriptionManager& prescriptionMgr,
                      DrugManager& drugMgr, DepartmentManager& deptMgr,
-                     ShortageManager& shortageMgr) {
+                     ShortageManager& shortageMgr, BedManager& bedMgr) {
     cout << "\n--- 医生登录 ---\n";
     cout << "账号：";
     string account; inputLine(account);
@@ -519,8 +534,10 @@ void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMg
         }
         Session::getInstance()->login("doctor", doctorId, doctorName);
         LogService::logLogin("doctor", account, true);
+        // 若发生了明文→哈希迁移，持久化写入
+        if (doctorMgr.dirty) doctorMgr.save();
         cout << "登录成功！\n";
-        showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr, shortageMgr);
+        showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr, shortageMgr, doctorMgr, bedMgr);
     } else {
         LogService::logLogin("doctor", account, false);
         cout << "登录失败！账号或密码错误。\n";
@@ -581,11 +598,11 @@ int main() {
         switch (choice) {
             case 1:
                 patientLoginFlow(patientMgr, recordMgr, prescriptionMgr, drugMgr,
-                                  shortageMgr, appointmentMgr, doctorMgr, deptMgr);
+                                   shortageMgr, appointmentMgr, doctorMgr, deptMgr, bedMgr);
                 break;
             case 2:
                 doctorLoginFlow(doctorMgr, appointmentMgr, recordMgr, prescriptionMgr,
-                                 drugMgr, deptMgr, shortageMgr);
+                                 drugMgr, deptMgr, shortageMgr, bedMgr);
                 break;
             case 3:
                 adminLoginFlow(patientMgr, doctorMgr, deptMgr, drugMgr, bedMgr, shortageMgr);
