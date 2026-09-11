@@ -49,3 +49,8 @@ CLAUDE.md
 
 # Added by code-review-graph
 .code-review-graph/
+
+# 本地笔记（个人开发记录，保留在本地但不纳入版本控制）
+# 注意：必须放在上方 "!*.md" 之后，后出现的规则优先级更高
+note.md
+项目笔记.md
