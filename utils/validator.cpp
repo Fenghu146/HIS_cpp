@@ -45,3 +45,48 @@ bool isValidIDCard(const string& id_card) {
 bool hasNoPipe(const string& str) {
     return str.find('|') == string::npos;
 }
+
+// ============================================================================
+// 安全数值解析实现
+// ============================================================================
+
+bool parseInt(const string& str, int& out) {
+    if (!isValidNumber(str)) return false;
+    try {
+        out = stoi(str);
+    } catch (...) {
+        return false; // 数值越界等异常统一视为解析失败
+    }
+    return true;
+}
+
+bool parseLongLong(const string& str, long long& out) {
+    if (!isValidNumber(str)) return false;
+    try {
+        out = stoll(str);
+    } catch (...) {
+        return false;
+    }
+    return true;
+}
+
+bool parseFloat(const string& str, float& out) {
+    if (str.empty() || str == ".") return false;
+
+    bool dotSeen = false;
+    for (char c : str) {
+        if (c == '.') {
+            if (dotSeen) return false; // 多个小数点非法
+            dotSeen = true;
+        } else if (!isdigit(static_cast<unsigned char>(c))) {
+            return false; // 出现非数字非小数点字符
+        }
+    }
+
+    try {
+        out = stof(str);
+    } catch (...) {
+        return false;
+    }
+    return true;
+}

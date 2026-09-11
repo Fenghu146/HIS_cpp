@@ -24,7 +24,7 @@ public:
     PrescriptionItemManager() : DataManager(FILE_PRESCRIPTION_ITEM){}
 
     string generateId() {
-        return "PI" + to_string(next_id++);
+        return string(ID_PREFIX_PRESCRIPTION_ITEM) + to_string(next_id++);
     }
 
 private:
@@ -64,6 +64,6 @@ public:
     PrescriptionManager() : DataManager(FILE_PRESCRIPTION){}
 
     string generateId() {
-        return "RX" + to_string(next_id++);
+        return string(ID_PREFIX_PRESCRIPTION) + to_string(next_id++);
     }
 };

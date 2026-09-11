@@ -1,7 +1,7 @@
 #pragma once
 
 //1、长度单位定义
-constexpr int MAX_NAME_LEN = 50; //constexpr 该表达式、变量或函数在满足条件下可以在编译期间求值，编译器会在编译期间计算其值，并将其替换为常量值，从而提高程序的性能和效率。
+constexpr int MAX_NAME_LEN = 50; //constexpr 表示编译期常量，编译器会用其值直接替换，无运行期开销
 constexpr int MAX_SPECIALTY_LEN = 100;
 constexpr int MAX_ID_LEN = 20;
 constexpr int MAX_PWD_LEN = 20;
@@ -14,12 +14,15 @@ constexpr char ID_DEPT = 'K';
 constexpr char ID_DRUG = 'M';
 constexpr char ID_BED = 'B';
 constexpr char ID_APPOINTMENT = 'A';
-constexpr char ID_RECORD = 'R';
-constexpr char ID_PRESCRIPTION = 'X';
-constexpr char ID_PRESCRIPTION_ITEM = 'I';
 constexpr char ID_SHORTAGE = 'S';
 
+// 多字符前缀：对应实体的 ID 形如 MR1 / RX1 / PI1
+constexpr const char* ID_PREFIX_RECORD = "MR";
+constexpr const char* ID_PREFIX_PRESCRIPTION = "RX";
+constexpr const char* ID_PREFIX_PRESCRIPTION_ITEM = "PI";
+
 //3、数据文件路径定义
+constexpr const char* DATA_DIR = "data";                  // 数据目录（首次运行自动创建）
 constexpr const char* FILE_PATIENT = "data/patient.txt";
 constexpr const char* FILE_DOCTOR = "data/doctor.txt";
 constexpr const char* FILE_DEPT = "data/dept.txt";
@@ -30,6 +33,7 @@ constexpr const char* FILE_RECORD = "data/record.txt";
 constexpr const char* FILE_PRESCRIPTION = "data/prescription.txt";
 constexpr const char* FILE_PRESCRIPTION_ITEM = "data/prescription_item.txt";
 constexpr const char* FILE_SHORTAGE = "data/shortage.txt";
+constexpr const char* FILE_LOG = "data/log.txt";          // 操作日志文件
 
 //4、业务默认值定义
 constexpr int REGISTRATION_FEE = 1000;

@@ -23,6 +23,6 @@ public:
     MedicalRecordManager() : DataManager(FILE_RECORD){}
 
     string generateId() {
-        return "MR" + to_string(next_id++);
+        return string(ID_PREFIX_RECORD) + to_string(next_id++);
     }
 };

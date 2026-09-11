@@ -38,6 +38,10 @@ public:
     // 检查某药品是否已有待处理记录
     bool hasPendingForDrug(const string& drug_id);
 
+    // 根据需求数量与当前库存判定缺药紧急度
+    // 规则：库存<=0 视为紧急；缺口超过当前库存一半也视为紧急
+    static ShortageUrgency calcUrgency(int required, int stock);
+
     ShortageManager() : DataManager(FILE_SHORTAGE) {}
 
     string generateId() {

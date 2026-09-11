@@ -1,0 +1,25 @@
+root = true
+
+# 全局约定
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C++ 源码：4 空格缩进，禁用 Tab
+[*.{cpp,h,hpp,cc}]
+indent_style = space
+indent_size = 4
+
+# 构建脚本与配置
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml,json}]
+indent_style = space
+indent_size = 2
+
+# Markdown 保留行尾空格（用于换行）
+[*.md]
+trim_trailing_whitespace = false

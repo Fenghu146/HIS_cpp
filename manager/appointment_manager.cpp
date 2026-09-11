@@ -4,6 +4,7 @@ int AppointmentManager::next_id = 1;
 
 #include "../model/crud.h"
 #include "../utils/input.h"
+#include "../utils/datetime.h"
 #include "../config/his_config.h"
 
 void AppointmentManager::load() {
@@ -119,7 +120,7 @@ Appointment* AppointmentManager::addAppointment(const string& patient_id,
     a->dept_id = dept_id;
     a->fee = fee;
     a->status = AppointmentStatus::WAITING;
-    a->create_time = "2026-08-06";  // 简化处理
+    a->create_time = nowTimestamp();
     Appointment* raw = a.get();
     list.push_back(std::move(a));
     save();

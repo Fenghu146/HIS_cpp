@@ -26,8 +26,4 @@ public:
         ShortageManager& shortageMgr,
         const string& patient_id
     );
-
-private:
-    // 判定缺药紧急度
-    static ShortageUrgency calcUrgency(int required, int stock);
 };

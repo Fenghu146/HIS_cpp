@@ -12,7 +12,7 @@ enum class ShortageUrgency { NORMAL, URGENT };
 // 缺药记录实体
 class Shortage {
 public:
-    string id;                  // SH1, SH2, ...
+    string id;                  // S1, S2, ...
     string drug_id;             // 缺药药品ID
     string drug_name;           // 药品名称（冗余，方便显示）
     int required_amount = 0;    // 需要数量

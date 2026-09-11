@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <sstream>
 using namespace std;
 
 class Patient {
@@ -102,35 +101,6 @@ public:
            << " | 科室ID: " << (d.dept_ids.empty() ? "通用" : d.dept_ids);
         return os;
     }
-
-    // 显示用：把 Drug 的科室 ID 转成名称后输出，便于可读性
-    friend ostream& displayWithDeptNames(ostream& os, const Drug& d,
-        const string& (*idToName)(const string&)) { //函数指针参数，用于把科室ID转成名称
-        os << "ID: " << d.id
-           << " | 通用名: " << d.general_name
-           << " | 商品名: " << (d.trade_name.empty() ? "-" : d.trade_name)
-           << " | 别名: " << (d.alias.empty() ? "-" : d.alias)
-           << " | 单价: " << d.price
-           << " | 库存: " << d.stock
-           << " | 阈值: " << d.warning_stock;
-        os << " | 科室: ";
-        if (d.dept_ids.empty()) {
-            os << "通用"; // 空串表示通用药品
-        } else {
-            vector<string> ids;
-            stringstream ss(d.dept_ids);
-            string token;
-            while (getline(ss, token, ',')) {
-                string name = idToName(token); // 通过外部函数把 ID 转成名称
-                ids.push_back(name.empty() ? token : name); // 若无法转换则显示原 ID
-            }
-            for (size_t i = 0; i < ids.size(); i++) {
-                if (i > 0) os << ","; // 多个科室用逗号分隔
-                os << ids[i];
-            }
-        }
-        return os;
-    }
 };
 
 // 床位
@@ -161,7 +131,7 @@ public:
 // 挂号单
 class Appointment {
 public:
-    string id;              // AP1, AP2, ...
+    string id;              // A1, A2, ...
     string patient_id;
     string doctor_id;
     string dept_id;

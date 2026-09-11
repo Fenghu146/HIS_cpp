@@ -27,6 +27,19 @@ static vector<string> splitIds(const string& s) {
     return result;
 }
 
+// 辅助：把用户输入的预警阈值转换为数值
+// 输入为空或 "0" 表示自动计算；输入非法时回退为自动计算并给出提示
+static int resolveWarningStock(const string& input, int maxStock) {
+    if (input.empty() || input == "0") return DrugManager::calcWarningStock(maxStock);
+
+    int value = 0;
+    if (!parseInt(input, value)) {
+        cout << "[提示] 预警阈值非法，已按自动计算处理。\n";
+        return DrugManager::calcWarningStock(maxStock);
+    }
+    return value;
+}
+
 void DrugManager::load() {
     ifstream in(filename);
     if (!in.is_open()) return;
@@ -125,23 +138,31 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
 
     cout << "请输入单价（分）：";
     string priceStr; inputLine(priceStr);
-    d->price = stof(priceStr) / 100.0f;
+    float priceFen = 0.0f;
+    if (!parseFloat(priceStr, priceFen)) {
+        cout << "[错误] 单价格式不正确！\n";
+        return;
+    }
+    d->price = priceFen / 100.0f;
 
     cout << "请输入初始库存：";
     string stockStr; inputLine(stockStr);
-    d->stock = stoi(stockStr);
+    if (!parseInt(stockStr, d->stock)) {
+        cout << "[错误] 库存必须为非负整数！\n";
+        return;
+    }
 
     cout << "请输入最大库存（可空，用于预警计算）：";
     string maxStr; inputLine(maxStr);
-    d->max_stock = maxStr.empty() ? 0 : stoi(maxStr);
+    d->max_stock = 0;
+    if (!maxStr.empty() && !parseInt(maxStr, d->max_stock)) {
+        cout << "[错误] 最大库存必须为非负整数！\n";
+        return;
+    }
 
     cout << "请输入预警阈值（0=自动计算）：";
     string warnStr; inputLine(warnStr);
-    if (warnStr.empty() || warnStr == "0") {
-        d->warning_stock = calcWarningStock(d->max_stock);
-    } else {
-        d->warning_stock = stoi(warnStr);
-    }
+    d->warning_stock = resolveWarningStock(warnStr, d->max_stock);
 
     // 科室选择：打印编号列表，输入序号
     cout << "请选择适用科室（输入序号，逗号分隔，可空=通用药品）：\n";
@@ -153,7 +174,11 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
         vector<string> idxParts = splitIds(idxInput);
         vector<string> validIds;
         for (auto& part : idxParts) {
-            int idx = stoi(part);
+            int idx = 0;
+            if (!parseInt(part, idx)) {
+                cout << "[错误] 序号「" << part << "」非法！\n";
+                return;
+            }
             string deptId = getDeptIdByIndex(deptMgr, idx);
             if (deptId.empty()) {
                 cout << "[错误] 序号 " << idx << " 无效！\n";
@@ -292,17 +317,18 @@ void DrugManager::modifyDrug(DepartmentManager& deptMgr) {
         case 4: {
             cout << "请输入新单价（分）：";
             string priceStr; inputLine(priceStr);
-            d->price = stof(priceStr) / 100.0f;
+            float priceFen = 0.0f;
+            if (!parseFloat(priceStr, priceFen)) {
+                cout << "[错误] 单价格式不正确，未修改。\n";
+                return;
+            }
+            d->price = priceFen / 100.0f;
             break;
         }
         case 5: {
             cout << "请输入新预警阈值（0=自动计算）：";
             string warnStr; inputLine(warnStr);
-            if (warnStr.empty() || warnStr == "0") {
-                d->warning_stock = calcWarningStock(d->max_stock);
-            } else {
-                d->warning_stock = stoi(warnStr);
-            }
+            d->warning_stock = resolveWarningStock(warnStr, d->max_stock);
             break;
         }
         case 6: {
@@ -341,7 +367,11 @@ void DrugManager::modifyDeptIds(Drug& d, DepartmentManager& deptMgr) {
     vector<string> idxParts = splitIds(idxInput);
     vector<string> validIds;
     for (auto& part : idxParts) {
-        int idx = stoi(part);
+        int idx = 0;
+        if (!parseInt(part, idx)) {
+            cout << "[错误] 序号「" << part << "」非法，已跳过\n";
+            continue;
+        }
         string deptId = getDeptIdByIndex(deptMgr, idx);
         if (deptId.empty()) {
             cout << "[错误] 序号 " << idx << " 无效，已跳过\n";

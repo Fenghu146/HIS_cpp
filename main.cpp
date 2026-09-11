@@ -17,6 +17,8 @@
 #include "service/auth.h"
 #include "service/log.h"
 #include "utils/input.h"
+#include "utils/validator.h"
+#include <filesystem>
 using namespace std;
 
 // ==================== 前向声明 ====================
@@ -117,7 +119,12 @@ void showPatientMgmtMenu(PatientManager& mgr) {
                 cout << "请输入患者ID:";
                 string id; inputLine(id);
                 cout << "请输入充值金额（分）:";
-                long long amt; cin >> amt; ClearInputBuffer();
+                string amtStr; inputLine(amtStr);
+                long long amt = 0;
+                if (!parseLongLong(amtStr, amt)) {
+                    cout << "[错误] 充值金额必须为非负整数！\n";
+                    break;
+                }
                 mgr.recharge(id, amt);
                 break;
             }
@@ -235,7 +242,9 @@ void showDrugMgmtMenu(DrugManager& drugMgr, DepartmentManager& deptMgr) {
                 string id; inputLine(id);
                 cout << "请输入入库数量：";
                 string amt; inputLine(amt);
-                drugMgr.stockIn(id, stoi(amt));
+                int qty = 0;
+                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
+                drugMgr.stockIn(id, qty);
                 break;
             }
             case 6: {
@@ -243,7 +252,9 @@ void showDrugMgmtMenu(DrugManager& drugMgr, DepartmentManager& deptMgr) {
                 string id; inputLine(id);
                 cout << "请输入出库数量：";
                 string amt; inputLine(amt);
-                drugMgr.stockOut(id, stoi(amt));
+                int qty = 0;
+                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
+                drugMgr.stockOut(id, qty);
                 break;
             }
             case 7: drugMgr.warningList(deptMgr); break;
@@ -326,7 +337,9 @@ void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, Shortage
                 string id; inputLine(id);
                 cout << "请输入入库数量：";
                 string amt; inputLine(amt);
-                drugMgr.stockIn(id, stoi(amt));
+                int qty = 0;
+                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
+                drugMgr.stockIn(id, qty);
                 break;
             }
             case 2: {
@@ -334,7 +347,9 @@ void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, Shortage
                 string id; inputLine(id);
                 cout << "请输入出库数量：";
                 string amt; inputLine(amt);
-                drugMgr.stockOut(id, stoi(amt));
+                int qty = 0;
+                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
+                drugMgr.stockOut(id, qty);
                 break;
             }
             case 3: drugMgr.warningList(deptMgr); break;
@@ -389,7 +404,12 @@ void showPatientMenu(PatientManager& patientMgr,
                 break;
             case 4: {
                 cout << "请输入充值金额（分）：";
-                long long amt; cin >> amt; ClearInputBuffer();
+                string amtStr; inputLine(amtStr);
+                long long amt = 0;
+                if (!parseLongLong(amtStr, amt)) {
+                    cout << "[错误] 充值金额必须为非负整数！\n";
+                    break;
+                }
                 patientMgr.recharge(patientId, amt);
                 break;
             }
@@ -427,7 +447,7 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
                     DepartmentManager& deptMgr,
                     ShortageManager& shortageMgr,
                     DoctorManager& doctorMgr,
-                    BedManager& bedMgr) {
+                    BedManager& /*bedMgr*/) {  // 预留：医生菜单暂不使用床位管理
     string doctorId = Session::getInstance()->getUserId();
 
     while (true) {
@@ -567,6 +587,12 @@ void adminLoginFlow(PatientManager& patientMgr, DoctorManager& doctorMgr,
 // ==================== 主函数 ====================
 
 int main() {
+    // 确保数据目录存在：否则首次运行时各 Manager::save() 会因文件打开失败而静默丢弃数据
+    {
+        error_code ec;
+        filesystem::create_directories(DATA_DIR, ec);
+    }
+
     PatientManager patientMgr;
     DoctorManager doctorMgr;
     DepartmentManager deptMgr;

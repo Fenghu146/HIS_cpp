@@ -1,22 +1,13 @@
 #include "log.h"
 #include "../config/his_config.h"
+#include "../utils/datetime.h"
 #include <fstream>
-#include <ctime>
-#include <sstream>
 using namespace std;
 
-static string currentTimestamp() {
-    time_t now = time(nullptr);
-    struct tm* t = localtime(&now);
-    char buf[20];
-    strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", t);
-    return string(buf);
-}
-
 void LogService::log(const string& role, const string& user_id, const string& action) {
-    ofstream out("data/log.txt", ios::app);
+    ofstream out(FILE_LOG, ios::app);
     if (!out.is_open()) return;
-    out << "[" << currentTimestamp() << "] "
+    out << "[" << nowTimestamp() << "] "
         << "[" << role << "] "
         << "[" << user_id << "] "
         << action << "\n";

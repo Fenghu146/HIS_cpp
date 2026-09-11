@@ -1,7 +1,6 @@
 #include "hospitalization_service.h"
 #include "../utils/input.h"
 #include "../config/his_config.h"
-#include <algorithm>
 
 bool HospitalizationService::admitPatient(
     PatientManager& patientMgr,
@@ -28,7 +27,7 @@ bool HospitalizationService::admitPatient(
         return false;
     }
 
-    // 2. 通过病历中的医生 ID 找到医生，再找科室 ID
+    // 2. 通过病历中的医生 ID 找到医生，确定建议住院的科室名称
     Doctor* doctor = nullptr;
     for (auto& d : doctorMgr.list) {
         if (d->id == hospRecord->doctor_id) {
@@ -41,17 +40,9 @@ bool HospitalizationService::admitPatient(
         return false;
     }
 
-    string deptId = doctor->dept_name; // 用科室名称匹配床位列表中的 dept_id（不精确，改为找科室ID）
-    // 实际通过科室管理器找科室ID（这里简化：床位按 dept_id 存储，而医生有 dept_name）
-    // 从床位管理中找属于该医生科室名称的空闲床（需要知道科室名到ID的映射）
-    // 由于 Doctor 只有 dept_name，我们遍历所有床位找名字匹配的科室
-    // 更好的做法：让 Bed 用 dept_id，这里通过科室名称反查
-    string targetDeptId;
-    // 暂时无法从 dept_name 直接查 dept_id，改用所有空闲床位中 dept_id 与医生 dept_name 关联
-    // 实际数据中 dept_id 与 dept_name 不一致，这里改为：列出所有空闲床位让患者选择
-    // （更合理的方案是病历中记录 dept_id，但现有结构只用 doctor_id）
-
-    // 由于数据结构限制，我们展示所有空闲床位供选择
+    // 说明：Doctor 仅保存科室名称（dept_name），而 Bed 使用科室 ID（dept_id），
+    // 二者缺少直接映射；因此这里后退为「列出全部空闲床位」供选择。
+    // 若需按科室精确筛选，应让病历/挂号单记录 dept_id 后再过滤。
     vector<Bed*> freeBeds;
     for (auto& b : bedMgr.list) {
         if (b->status == BedStatus::FREE) {

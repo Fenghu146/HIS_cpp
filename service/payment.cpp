@@ -2,14 +2,6 @@
 #include "../utils/input.h"
 #include "../config/his_config.h"
 
-ShortageUrgency PaymentService::calcUrgency(int required, int stock) {
-    if (stock == 0) return ShortageUrgency::URGENT;
-    // 缺少数量超过当前库存的一半 → 紧急
-    if (required > stock && (required - stock) > stock / 2) return ShortageUrgency::URGENT;
-    if (required > stock) return ShortageUrgency::NORMAL;
-    return ShortageUrgency::NORMAL;
-}
-
 bool PaymentService::payPrescription(
     PatientManager& patientMgr,
     PrescriptionManager& prescriptionMgr,
@@ -146,7 +138,7 @@ bool PaymentService::dispensePrescription(
             Drug* d = drugMgr.findDrug(item->drug_id);
             if (!d) continue;
             if (d->stock < item->quantity) {
-                ShortageUrgency urgency = calcUrgency(item->quantity, d->stock);
+                ShortageUrgency urgency = ShortageManager::calcUrgency(item->quantity, d->stock);
                 shortageMgr.addShortage(
                     d->id, d->general_name,
                     item->quantity, d->stock,

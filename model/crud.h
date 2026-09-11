@@ -29,21 +29,4 @@ bool removeById(vector<unique_ptr<T>>& list, const string& id) {
     return false;
 }
 
-template<typename T>
-void forEach(vector<unique_ptr<T>>& list, void (*func)(T*)) {
-    for (auto& item : list) {
-        func(item.get());
-    }
-}
 
-template<typename T>
-void clearList(vector<unique_ptr<T>>& list) {
-    list.clear(); //清除列表，unique_ptr 会自动释放内存
-}
-
-template<typename T>
-T* addNode(vector<unique_ptr<T>>& list, unique_ptr<T> node) {
-    T* raw = node.get();
-    list.push_back(std::move(node));
-    return raw;
-}

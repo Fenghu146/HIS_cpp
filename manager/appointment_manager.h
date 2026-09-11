@@ -21,7 +21,8 @@ public:
 
     AppointmentManager() : DataManager(FILE_APPOINTMENT){}
 
+    // 生成挂号单 ID：前缀 + 自增序号，例 A1, A2, A3...
     string generateId() {
-        return string(1, ID_APPOINTMENT) + to_string(next_id++); //生成预约ID“A1、A2、A3……”，创建一个字符串对象，使用ID_APPOINTMENT字符和next_id整数的字符串表示形式进行初始化，并将next_id递增1，以便为下一个预约生成唯一的ID。
+        return string(1, ID_APPOINTMENT) + to_string(next_id++);
     }
 };

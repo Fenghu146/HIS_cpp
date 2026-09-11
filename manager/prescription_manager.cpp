@@ -5,7 +5,9 @@ int PrescriptionItemManager::next_id = 1;
 
 #include "../model/crud.h"
 #include "../utils/input.h"
+#include "../utils/datetime.h"
 #include "../config/his_config.h"
+#include <cstring>
 
 // ==================== PrescriptionItemManager ====================
 
@@ -33,8 +35,8 @@ void PrescriptionItemManager::load() {
     buildIndex();
 
     for (auto& item : list) {
-        if (item->id.length() > 2 && item->id[0] == 'P' && item->id[1] == 'I') {
-            int num = stoi(item->id.substr(2));
+        if (item->id.starts_with(ID_PREFIX_PRESCRIPTION_ITEM)) {
+            int num = stoi(item->id.substr(strlen(ID_PREFIX_PRESCRIPTION_ITEM)));
             if (num >= next_id) next_id = num + 1;
         }
     }
@@ -131,8 +133,8 @@ void PrescriptionManager::load() {
     in.close();
 
     for (auto& p : list) {
-        if (p->id.length() > 2 && p->id[0] == 'R' && p->id[1] == 'X') {
-            int num = stoi(p->id.substr(2));
+        if (p->id.starts_with(ID_PREFIX_PRESCRIPTION)) {
+            int num = stoi(p->id.substr(strlen(ID_PREFIX_PRESCRIPTION)));
             if (num >= next_id) next_id = num + 1;
         }
     }
@@ -227,7 +229,7 @@ Prescription* PrescriptionManager::addPrescription(const string& record_id,
     p->patient_id = patient_id;
     p->doctor_id = doctor_id;
     p->status = PrescriptionStatus::UNPAID;
-    p->create_time = "2026-08-06";
+    p->create_time = nowTimestamp();
 
     // 计算总金额
     p->total_amount = 0;

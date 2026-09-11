@@ -4,7 +4,9 @@ int MedicalRecordManager::next_id = 1;
 
 #include "../model/crud.h"
 #include "../utils/input.h"
+#include "../utils/datetime.h"
 #include "../config/his_config.h"
+#include <cstring>
 
 void MedicalRecordManager::load() {
     ifstream in(filename);
@@ -31,8 +33,8 @@ void MedicalRecordManager::load() {
     in.close();
 
     for (auto& r : list) {
-        if (r->id.length() > 2 && r->id[0] == 'M' && r->id[1] == 'R') {
-            int num = stoi(r->id.substr(2));
+        if (r->id.starts_with(ID_PREFIX_RECORD)) {
+            int num = stoi(r->id.substr(strlen(ID_PREFIX_RECORD)));
             if (num >= next_id) next_id = num + 1;
         }
     }
@@ -114,7 +116,7 @@ MedicalRecord* MedicalRecordManager::addRecord(const string& appointment_id,
     r->complaint = complaint;
     r->diagnosis = diagnosis;
     r->orders = orders;
-    r->create_time = "2026-08-06";
+    r->create_time = nowTimestamp();
     r->need_hospitalize = need_hospitalize;
     MedicalRecord* raw = r.get();
     list.push_back(std::move(r));

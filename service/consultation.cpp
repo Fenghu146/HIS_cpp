@@ -55,9 +55,9 @@ bool ConsultationService::prescribe(
 
         cout << "请输入数量：";
         string qtyStr; inputLine(qtyStr);
-        int qty = stoi(qtyStr);
-        if (qty <= 0) {
-            cout << "[错误] 数量必须大于0\n";
+        int qty = 0;
+        if (!parseInt(qtyStr, qty) || qty <= 0) {
+            cout << "[错误] 数量必须为正整数！\n";
             continue;
         }
         if (qty > drug->stock) {
@@ -105,7 +105,7 @@ bool ConsultationService::consultPatient(
     MedicalRecordManager& recordMgr,
     PrescriptionManager& prescriptionMgr,
     DrugManager& drugMgr,
-    DepartmentManager& deptMgr,
+    DepartmentManager& /*deptMgr*/,  // 预留：当前接诊流程未使用科室信息
     const string& doctor_id) {
 
     // 1. 收集待诊患者

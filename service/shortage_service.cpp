@@ -1,6 +1,8 @@
 #include "shortage_service.h"
 #include "../utils/input.h"
+#include "../utils/validator.h"
 #include "../config/his_config.h"
+#include <algorithm>
 
 void ShortageService::viewPendingShortages(ShortageManager& shortageMgr) {
     cout << "\n=== 待办缺药清单 ===\n";
@@ -40,21 +42,14 @@ void ShortageService::reportShortage(
 
     cout << "请输入需求数量：";
     string qtyStr; inputLine(qtyStr);
-    int qty = stoi(qtyStr);
-    if (qty <= 0) {
-        cout << "[错误] 数量必须大于0\n";
+    int qty = 0;
+    if (!parseInt(qtyStr, qty) || qty <= 0) {
+        cout << "[错误] 数量必须为正整数！\n";
         return;
     }
 
-    // 判定紧急度：如果库存为0或需求远超库存 → 紧急
-    ShortageUrgency urgency;
-    if (d->stock == 0) {
-        urgency = ShortageUrgency::URGENT;
-    } else if (qty > d->stock && (qty - d->stock) > d->stock / 2) {
-        urgency = ShortageUrgency::URGENT;
-    } else {
-        urgency = ShortageUrgency::NORMAL;
-    }
+    // 判定紧急度（统一由 ShortageManager 维护规则）
+    ShortageUrgency urgency = ShortageManager::calcUrgency(qty, d->stock);
 
     Shortage* s = shortageMgr.addShortage(
         d->id, d->general_name, qty, d->stock,
@@ -109,7 +104,11 @@ bool ShortageService::fulfillShortage(
         // 已补货，询问入库数量
         cout << "请输入补货数量（直接回车则按需求数量 " << s->required_amount << "）：";
         string qtyStr; inputLine(qtyStr);
-        int addQty = qtyStr.empty() ? s->required_amount : stoi(qtyStr);
+        int addQty = s->required_amount;
+        if (!qtyStr.empty() && !parseInt(qtyStr, addQty)) {
+            cout << "[提示] 补货数量非法，已按需求数量 " << s->required_amount << " 处理。\n";
+            addQty = s->required_amount;
+        }
         if (addQty > 0) {
             drugMgr.stockIn(s->drug_id, addQty);
         }

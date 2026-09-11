@@ -1,5 +1,7 @@
 #include "shortage_manager.h"
 #include "../model/crud.h"
+#include "../utils/datetime.h"
+#include <algorithm>
 
 int ShortageManager::next_id = 1;
 
@@ -69,7 +71,7 @@ Shortage* ShortageManager::addShortage(const string& drug_id, const string& drug
     s->triggered_by = triggered_by;
     s->urgency = urgency;
     s->status = ShortageStatus::PENDING;
-    s->create_time = "2026-08-08";
+    s->create_time = nowTimestamp();
 
     Shortage* raw = s.get();
     list.push_back(std::move(s));
@@ -144,6 +146,13 @@ bool ShortageManager::hasPendingForDrug(const string& drug_id) {
         }
     }
     return false;
+}
+
+ShortageUrgency ShortageManager::calcUrgency(int required, int stock) {
+    if (stock <= 0) return ShortageUrgency::URGENT;
+    // 缺口超过当前库存的一半 → 紧急
+    if (required > stock && (required - stock) > stock / 2) return ShortageUrgency::URGENT;
+    return ShortageUrgency::NORMAL;
 }
 
 bool ShortageManager::compareByUrgency(const Shortage* a, const Shortage* b) {
