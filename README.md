@@ -185,6 +185,9 @@ HIS_cpp/
 ├── CMakeLists.txt              # 构建脚本（CMake ≥ 3.16）
 ├── main.cpp                    # 程序入口：角色路由 + 各角色菜单
 ├── README.md                   # 项目文档
+├── CHANGELOG.md                # 更新日志（Keep a Changelog）
+├── docs/
+│   └── demo/                   # 一键演示：demo.sh / 演示 GIF
 ├── .clang-format               # 统一代码格式配置
 ├── .editorconfig               # 编辑器统一约定
 ├── .gitignore                  # 忽略构建产物与运行时数据
@@ -307,6 +310,18 @@ cmake --build build --config Release
 
 > 见 `config/his_config.h` 中的 `ADMIN_USERNAME` / `ADMIN_PASSWORD`，建议自行修改。
 
+### 5. 一键全流程演示
+
+```bash
+bash docs/demo/demo.sh
+```
+
+真实二进制 + 回归测试同源输入，按 12 个阶段标注跑通「建科 → 医生 → 药品 → 患者 → 充值 →
+挂号 → 接诊 → 开方 → 缴费 → 取药 → 落盘核验」，输出存 `docs/demo/full-flow.txt`；
+`python3 docs/demo/gen_gif.py` 可再生成演示 GIF：
+
+![全流程演示](docs/demo/full-flow.gif)
+
 ---
 
 ## 使用说明
@@ -399,7 +414,8 @@ cmake --build build --config Release
 项目自带**全流程回归测试**，覆盖从建档到取药的完整业务闭环：
 
 ```bash
-bash tests/full_flow_test.sh
+bash tests/full_flow_test.sh   # 直接运行
+ctest --test-dir build         # 或通过 CTest（构建后）
 ```
 
 - 在 `tests/.work/` 独立数据目录中运行，不污染源码树
