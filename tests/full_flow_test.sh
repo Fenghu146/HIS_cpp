@@ -16,6 +16,10 @@
 # ============================================================
 set -u
 
+# 字节级确定性：数据提取与字符串断言（grep -F）按字节工作，
+# 不受 macOS/BSD 工具在 UTF-8 locale 下对非法字节序列的行为差异影响。
+export LC_ALL=C
+
 HERE="$(cd "$(dirname "$0")" && pwd)"
 SRC="$HERE/.."
 WORK="$HERE/.work"
@@ -41,24 +45,52 @@ assert_eq() {
 }
 
 # ---------- 构建 ----------
+# 可执行文件定位：兼容单配置（Makefiles/Ninja，产物在 build/）与
+# 多配置（MSVC，产物在 build/<Config>/HIS_cpp.exe）生成器。
+find_bin() {
+    local c
+    for c in \
+        "$SRC/build/HIS_cpp" \
+        "$SRC/build/HIS_cpp.exe" \
+        "$SRC/build/Release/HIS_cpp" \
+        "$SRC/build/Release/HIS_cpp.exe" \
+        "$SRC/build/RelWithDebInfo/HIS_cpp.exe" \
+        "$SRC/build/Debug/HIS_cpp.exe" \
+        "$SRC/build/Debug/HIS_cpp"; do
+        [ -f "$c" ] && { printf '%s' "$c"; return 0; }
+    done
+    return 1
+}
+
 echo "== 构建 HIS_cpp =="
-if [ ! -x "$SRC/build/HIS_cpp" ]; then
+if ! BIN=$(find_bin); then
     cmake -S "$SRC" -B "$SRC/build" -DCMAKE_BUILD_TYPE=Release >"$SRC/build-config.log" 2>&1 || {
         echo "CMake 配置失败，日志：$SRC/build-config.log"; exit 1
     }
-    cmake --build "$SRC/build" -j2 >"$SRC/build.log" 2>&1 || {
+    cmake --build "$SRC/build" --config Release -j2 >"$SRC/build.log" 2>&1 || {
         echo "构建失败，日志：$SRC/build.log"; exit 1
     }
+    BIN=$(find_bin) || { echo "构建后仍未找到可执行文件"; exit 1; }
 fi
-pass "构建成功"
+pass "构建成功（$BIN）"
 
 # ---------- 准备独立工作目录 ----------
 rm -rf "$WORK"
 mkdir -p "$WORK" "$OUT"
-cp "$SRC/build/HIS_cpp" "$WORK/his_cpp"
+
+# 超时保护：功能性探测而非 command -v——Windows Git Bash 的 PATH 里
+# timeout 解析到 System32\timeout.exe（拒绝 stdin 重定向，报错即退出），
+# 只有能真正跑通 `timeout 1 true` 的实现才可用。
+if timeout 1 true >/dev/null 2>&1; then TMO="timeout 60"; else TMO=""; fi
 
 run_case() { # $1=用例名 $2=输入文件
-    ( cd "$WORK" && rm -rf data && timeout 60 ./his_cpp < "$2" > "$OUT/$1.out" 2>&1 )
+    ( cd "$WORK" && rm -rf data && $TMO "$BIN" < "$2" > "$OUT/$1.out" 2>&1 )
+    local rc=$?
+    if [ "$rc" -ge 124 ]; then
+        fail "$1 用例超时/被杀 (rc=$rc)"
+    elif [ "$rc" -ne 0 ]; then
+        fail "$1 用例非正常退出 (rc=$rc)"
+    fi
 }
 
 # ============================================================
