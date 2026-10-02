@@ -56,7 +56,7 @@ void DoctorManager::save() {
             << d->dept_name << '|'
             << d->specialty << '|'
             << d->account << '|'
-            << d->password << '|'
+            << (d->password_hash.empty() ? d->password : std::string()) << '|'
             << d->password_hash << '\n';
     }
     out.close();
@@ -89,6 +89,8 @@ void DoctorManager::registerDoctor(const std::function<bool(const std::string&)>
         cout << "[错误] 密码不能为空，请重新输入：";
         inputLine(d->password);
     }
+    d->password_hash = sha256(d->password);  // 统一 sha256 存储，明文不落盘
+    d->password.clear();
 
     string newId = generateId();
     d->id = newId;

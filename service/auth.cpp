@@ -46,5 +46,5 @@ bool AuthService::loginDoctor(DoctorManager& mgr, const string& account, const s
 
 // 管理员登录：比对 config 中的静态凭证
 bool AuthService::loginAdmin(const string& username, const string& password) {
-    return username == ADMIN_USERNAME && password == ADMIN_PASSWORD;
+    return username == ADMIN_USERNAME && sha256(password) == ADMIN_PASSWORD_HASH;
 }

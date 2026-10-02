@@ -65,7 +65,7 @@ void PatientManager::save() {
             << p->phone << '|'
             << p->id_card << '|'
             << p->balance << '|'
-            << p->pin << '|'
+            << (p->pin_hash.empty() ? p->pin : std::string()) << '|'
             << p->pin_hash << '|'
             << p->insurance_rate << '\n';
     }
@@ -88,6 +88,8 @@ void PatientManager::registerPatient() {
         cout << "[错误] 密码必须为 6 位数字，请重新输入:";
         inputLine(p->pin);
     }
+    p->pin_hash = sha256(p->pin);  // 统一 sha256 存储，明文不落盘
+    p->pin.clear();
 
     string newId = generateId();
     p->id = newId;
@@ -128,6 +130,7 @@ bool PatientManager::validatePin(const string& id, const string& pin) {
     } else {
         if (p->pin == pin) {
             p->pin_hash = sha256(pin);
+            p->pin.clear();   // 旧版明文 PIN 迁移后清除，不再落盘
             save();
             return true;
         }
@@ -146,8 +149,8 @@ bool PatientManager::changePin(const string& id, const string& old_pin, const st
         cout << "[错误] 原密码不正确！" << endl;
         return false;
     }
-    p->pin = new_pin;
-    p->pin_hash = sha256(new_pin);
+    p->pin_hash = sha256(new_pin);  // 统一 sha256 存储
+    p->pin.clear();
     save();
     cout << "密码修改成功！" << endl;
     return true;

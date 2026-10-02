@@ -47,7 +47,7 @@ constexpr int BED_FEE_ICU = 15000;       // 重症床日费
 
 //5、管理员配置
 constexpr const char* ADMIN_USERNAME = "admin";
-constexpr const char* ADMIN_PASSWORD = "123456";
+constexpr const char* ADMIN_PASSWORD_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"; // sha256("123456")，源码/数据均不留明文口令
 
 //6、通用分隔符定义
 constexpr const char* FILE_SEP = "|"; //定义一个编译期常量分隔符字符串，用于统一表示文本数据文件的字段分隔符
