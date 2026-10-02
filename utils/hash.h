@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <string>
 #include <cstdint>
 #include <cstring>
@@ -37,9 +38,8 @@ static void sha256(const uint8_t* data, size_t len, uint8_t out[32]) {
     // 消息填充：补 1 字节 0x80 + 若干 0x00 + 8 字节长度（位）
     size_t orig = len;
     size_t padded = ((len + 9 + 63) / 64) * 64; // 总填充后长度（64 的倍数）
-    uint8_t buf[128]; // 最多 2 个块（原始长度 <= 55 时只需 1 块）
-    memset(buf, 0, padded);
-    memcpy(buf, data, len);
+    std::vector<uint8_t> buf(padded, 0); // 按填充后长度动态分配，长消息不再越界
+    memcpy(buf.data(), data, len);
     buf[len] = 0x80;
     // 末尾 8 字节存原始位长度（大端）
     uint64_t bitlen = (uint64_t)orig * 8;
