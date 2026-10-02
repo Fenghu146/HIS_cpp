@@ -4,6 +4,9 @@ build/
 out/
 compile_commands.json
 
+# Test artifacts
+tests/.work/
+
 # Python venv
 venv/
 

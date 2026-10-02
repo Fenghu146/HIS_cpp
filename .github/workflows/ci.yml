@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Regression (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure (CMake)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release -j 2
+
+      - name: Check zero warnings (GCC/Clang)
+        if: runner.os != 'Windows'
+        run: |
+          rm -rf build-warncheck && cmake -B build-warncheck -DCMAKE_BUILD_TYPE=Release >/dev/null
+          out=$(cmake --build build-warncheck -j 2 2>&1 | grep -c "warning:" || true)
+          echo "warning count = $out"
+          if [ "$out" -ne 0 ]; then
+            echo "::error::编译告警未清零（$out 条）"
+            exit 1
+          fi
+
+      - name: Run full-flow regression tests
+        run: bash tests/full_flow_test.sh
