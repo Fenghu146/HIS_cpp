@@ -8,6 +8,7 @@
 
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue)
 ![CMake](https://img.shields.io/badge/CMake-3.16%2B-green)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 ![Dependencies](https://img.shields.io/badge/Dependencies-None-brightgreen)
 ![License](https://img.shields.io/badge/License-See%20below-orange)
@@ -26,6 +27,7 @@
 - [快速开始](#快速开始)
 - [使用说明](#使用说明)
 - [数据持久化](#数据持久化)
+- [测试与回归](#测试与回归)
 - [配置说明](#配置说明)
 - [业务规则](#业务规则)
 - [安全性设计](#安全性设计)
@@ -389,6 +391,21 @@ cmake --build build --config Release
 
 ---
 
+## 测试与回归
+
+项目自带**全流程回归测试**，覆盖从建档到取药的完整业务闭环：
+
+```bash
+bash tests/full_flow_test.sh
+```
+
+- 在 `tests/.work/` 独立数据目录中运行，不污染源码树
+- stdin 驱动菜单完成「建科 → 建医生 → 建药品 → 建患者 → 充值 → 挂号 → 接诊写病历 → 开方 → 缴费 → 取药」全链路
+- 覆盖边界场景：身份证校验位、医生账号唯一性、科室引用完整性、PIN 格式、余额不足、同一药品多明细累积超卖、重启后数据一致性
+- 共 42 项断言，全部通过退出码为 0，否则打印失败项与详细输出路径
+
+CI（GitHub Actions）在 Linux / macOS / Windows 三平台执行构建 + 告警零容忍检查 + 回归测试，PR 必须全绿。
+
 ## 配置说明
 
 所有可调参数集中在 `config/his_config.h`，修改后重新编译即可生效。
@@ -502,7 +519,7 @@ clang-format -i $(git ls-files '*.cpp' '*.h')
 | 时间精度 | `create_time` 精确到秒，未记录时区；住院未记录入院 / 出院时间 |
 | 数据存储 | 文本文件全量读写，无并发保护、无事务、无索引（仅处方明细有内存索引） |
 | 并发 / 多用户 | 单进程单会话，无多用户并发能力 |
-| 测试 | 尚无单元测试（`validator`、`billing` 等纯逻辑适合优先补充） |
+| 测试 | 已有 `tests/full_flow_test.sh` 全流程回归（42 项断言，含超卖守护）；尚无单元测试（`validator`、`billing` 等纯逻辑适合优先补充） |
 | 头文件风格 | 部分头文件使用 `using namespace std;`，后续可改为完全限定名以提升封装性 |
 | 待实现 | 医生排班、统计报表（日挂号量 / 收入 / Top 药品）、CSV 导出、采购建议单 |
 
