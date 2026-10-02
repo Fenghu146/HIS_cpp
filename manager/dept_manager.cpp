@@ -8,7 +8,8 @@ int DepartmentManager::next_id = 1;
 
 void DepartmentManager::load() {
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -29,20 +30,19 @@ void DepartmentManager::load() {
     for (auto& d : list) {
         if (d->id.length() > 1 && d->id[0] == ID_DEPT) {
             int num = stoi(d->id.substr(1));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
 
 void DepartmentManager::save() {
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& d : list) {
-        out << d->id << '|'
-            << d->name << '|'
-            << d->description << '|'
-            << d->director_name << '|'
+        out << d->id << '|' << d->name << '|' << d->description << '|' << d->director_name << '|'
             << d->location << '\n';
     }
     out.close();
@@ -51,10 +51,14 @@ void DepartmentManager::save() {
 void DepartmentManager::registerDepartment() {
     auto d = make_unique<Department>();
 
-    cout << "请输入科室名称："; inputLine(d->name);
-    cout << "请输入科室简介："; inputLine(d->description);
-    cout << "请输入负责人姓名："; inputLine(d->director_name);
-    cout << "请输入科室位置："; inputLine(d->location);
+    cout << "请输入科室名称：";
+    inputLine(d->name);
+    cout << "请输入科室简介：";
+    inputLine(d->description);
+    cout << "请输入负责人姓名：";
+    inputLine(d->director_name);
+    cout << "请输入科室位置：";
+    inputLine(d->location);
 
     d->id = generateId();
     string newId = d->id;
@@ -65,18 +69,20 @@ void DepartmentManager::registerDepartment() {
     cout << "注册成功！ID：" << newId << endl;
 }
 
-Department *DepartmentManager::findDepartment(const string &id) {
+Department* DepartmentManager::findDepartment(const string& id) {
     return findById(list, id);
 }
 
-Department *DepartmentManager::findDepartmentByName(const string &name) {
-    for (auto &d : list) {
-        if (d->name == name) return d.get();
+Department* DepartmentManager::findDepartmentByName(const string& name) {
+    for (auto& d : list) {
+        if (d->name == name)
+            return d.get();
     }
     return nullptr;
 }
 
-bool DepartmentManager::deleteDepartment(const string &id, DoctorManager &docMgr, DrugManager &drugMgr) {
+bool DepartmentManager::deleteDepartment(const string& id, DoctorManager& docMgr,
+                                         DrugManager& drugMgr) {
     Department* d = findDepartment(id);
     if (!d) {
         cout << "未找到科室\n";
@@ -91,11 +97,12 @@ bool DepartmentManager::deleteDepartment(const string &id, DoctorManager &docMgr
         return false;
     }
     bool ok = removeById(list, id);
-    if (ok) save();
+    if (ok)
+        save();
     return ok;
 }
 
-void DepartmentManager::listDepartment(DoctorManager &docMgr) {
+void DepartmentManager::listDepartment(DoctorManager& docMgr) {
     if (list.empty()) {
         cout << "暂无科室记录。\n";
         return;
@@ -117,11 +124,13 @@ string DepartmentManager::getNameById(const string& id) const {
 
 bool DepartmentManager::hasDrugAssociation(const string& dept_id, DrugManager& drugMgr) {
     for (auto& drug : drugMgr.list) {
-        if (drug->dept_ids.empty()) continue;
+        if (drug->dept_ids.empty())
+            continue;
         stringstream ss(drug->dept_ids);
         string token;
         while (getline(ss, token, ',')) {
-            if (token == dept_id) return true;
+            if (token == dept_id)
+                return true;
         }
     }
     return false;

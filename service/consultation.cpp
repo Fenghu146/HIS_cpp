@@ -3,7 +3,8 @@
 #include "../utils/validator.h"
 #include "../config/his_config.h"
 
-void ConsultationService::showWaitingList(AppointmentManager& appointmentMgr, const string& doctor_id) {
+void ConsultationService::showWaitingList(AppointmentManager& appointmentMgr,
+                                          const string& doctor_id) {
     cout << "\n=== 待诊患者列表 ===\n";
     bool found = false;
     int idx = 1;
@@ -18,13 +19,9 @@ void ConsultationService::showWaitingList(AppointmentManager& appointmentMgr, co
     }
 }
 
-bool ConsultationService::prescribe(
-    PrescriptionManager& prescriptionMgr,
-    DrugManager& drugMgr,
-    const string& record_id,
-    const string& patient_id,
-    const string& doctor_id) {
-
+bool ConsultationService::prescribe(PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                                    const string& record_id, const string& patient_id,
+                                    const string& doctor_id) {
     vector<PrescriptionManager::ItemInput> items;
 
     while (true) {
@@ -38,14 +35,17 @@ bool ConsultationService::prescribe(
         cout << "可选药品：\n";
         int idx = 1;
         for (auto& d : drugMgr.list) {
-            cout << "  " << idx++ << ". " << d->general_name
-                 << " (" << d->id << ") 库存:" << d->stock
-                 << " 单价:" << d->price << "元" << endl;
+            cout << "  " << idx++ << ". " << d->general_name << " (" << d->id
+                 << ") 库存:" << d->stock << " 单价:" << d->price << "元" << endl;
         }
         cout << "  0. 完成开方\n";
         cout << "请选择药品序号：";
-        int drugIdx = getValidChoice(0, static_cast<int>(drugMgr.list.size())); //static_cast<int> 用于将 size_t 转换为 int，避免编译器警告
-        if (drugIdx == 0) break;
+        int drugIdx = getValidChoice(
+            0,
+            static_cast<int>(
+                drugMgr.list.size()));  // static_cast<int> 用于将 size_t 转换为 int，避免编译器警告
+        if (drugIdx == 0)
+            break;
 
         Drug* drug = drugMgr.list[drugIdx - 1].get();
         if (drug->stock <= 0) {
@@ -54,7 +54,8 @@ bool ConsultationService::prescribe(
         }
 
         cout << "请输入数量：";
-        string qtyStr; inputLine(qtyStr);
+        string qtyStr;
+        inputLine(qtyStr);
         int qty = 0;
         if (!parseInt(qtyStr, qty) || qty <= 0) {
             cout << "[错误] 数量必须为正整数！\n";
@@ -66,7 +67,8 @@ bool ConsultationService::prescribe(
         }
 
         cout << "请输入用法用量：";
-        string usage; inputLine(usage);
+        string usage;
+        inputLine(usage);
 
         // 计算金额（drug.price 是元，转为分）
         int amount = static_cast<int>(drug->price * 100) * qty;
@@ -81,7 +83,8 @@ bool ConsultationService::prescribe(
         cout << "已添加：" << drug->general_name << " ×" << qty << " = " << amount << "分\n";
         cout << "当前处方总金额：";
         int total = 0;
-        for (auto& i : items) total += i.amount;
+        for (auto& i : items)
+            total += i.amount;
         cout << total << "分\n";
     }
 
@@ -101,13 +104,10 @@ bool ConsultationService::prescribe(
 }
 
 bool ConsultationService::consultPatient(
-    AppointmentManager& appointmentMgr,
-    MedicalRecordManager& recordMgr,
-    PrescriptionManager& prescriptionMgr,
-    DrugManager& drugMgr,
+    AppointmentManager& appointmentMgr, MedicalRecordManager& recordMgr,
+    PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
     DepartmentManager& /*deptMgr*/,  // 预留：当前接诊流程未使用科室信息
     const string& doctor_id) {
-
     // 1. 收集待诊患者
     vector<Appointment*> waiting;
     for (auto& a : appointmentMgr.list) {
@@ -124,8 +124,8 @@ bool ConsultationService::consultPatient(
     // 2. 选择患者
     cout << "\n=== 选择接诊患者 ===\n";
     for (size_t i = 0; i < waiting.size(); i++) {
-        cout << "  " << (i + 1) << ". " << waiting[i]->patient_id
-             << " (挂号单：" << waiting[i]->id << ")\n";
+        cout << "  " << (i + 1) << ". " << waiting[i]->patient_id << " (挂号单：" << waiting[i]->id
+             << ")\n";
     }
     cout << "请选择患者序号：";
     int idx = getValidChoice(1, static_cast<int>(waiting.size()));
@@ -140,19 +140,22 @@ bool ConsultationService::consultPatient(
     do {
         cout << "请输入主诉：";
         inputLine(complaint);
-        if (!hasNoPipe(complaint)) cout << "[错误] 不能包含 | 字符！\n";
-    } while (!hasNoPipe(complaint)); //安全输入
+        if (!hasNoPipe(complaint))
+            cout << "[错误] 不能包含 | 字符！\n";
+    } while (!hasNoPipe(complaint));  // 安全输入
 
     do {
         cout << "请输入诊断：";
         inputLine(diagnosis);
-        if (!hasNoPipe(diagnosis)) cout << "[错误] 不能包含 | 字符！\n";
+        if (!hasNoPipe(diagnosis))
+            cout << "[错误] 不能包含 | 字符！\n";
     } while (!hasNoPipe(diagnosis));
 
     do {
         cout << "请输入医嘱：";
         inputLine(orders);
-        if (!hasNoPipe(orders)) cout << "[错误] 不能包含 | 字符！\n";
+        if (!hasNoPipe(orders))
+            cout << "[错误] 不能包含 | 字符！\n";
     } while (!hasNoPipe(orders));
 
     // 4. 是否建议住院
@@ -160,10 +163,8 @@ bool ConsultationService::consultPatient(
     bool needHosp = getConfirm();
 
     // 5. 创建病历
-    MedicalRecord* record = recordMgr.addRecord(
-        apt->id, apt->patient_id, doctor_id,
-        complaint, diagnosis, orders, needHosp
-    );
+    MedicalRecord* record = recordMgr.addRecord(apt->id, apt->patient_id, doctor_id, complaint,
+                                                diagnosis, orders, needHosp);
     cout << "病历已创建，ID：" << record->id << endl;
 
     // 6. 更新挂号单状态

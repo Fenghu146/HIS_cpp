@@ -20,14 +20,13 @@ public:
     void warningList(DepartmentManager& deptMgr);
     void modifyDrug(DepartmentManager& deptMgr);
 
-    DrugManager() : DataManager(FILE_DRUG){}
+    DrugManager() : DataManager(FILE_DRUG) {}
 
-    string generateId() {
-        return string(1, ID_DRUG) + to_string(next_id++);
-    }
+    string generateId() { return string(1, ID_DRUG) + to_string(next_id++); }
 
     static int calcWarningStock(int max_stock) {
-        if (max_stock <= 0) return 20;
+        if (max_stock <= 0)
+            return 20;
         return static_cast<int>(max_stock * DRUG_WARNING_RATIO);
     }
 

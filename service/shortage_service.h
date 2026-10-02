@@ -11,14 +11,8 @@ public:
     static void viewPendingShortages(ShortageManager& shortageMgr);
 
     // 主动报告库存不足（医生/任何人可用）
-    static void reportShortage(
-        DrugManager& drugMgr,
-        ShortageManager& shortageMgr
-    );
+    static void reportShortage(DrugManager& drugMgr, ShortageManager& shortageMgr);
 
     // 处理缺药：管理员标记已补货（可选同时入库）
-    static bool fulfillShortage(
-        ShortageManager& shortageMgr,
-        DrugManager& drugMgr
-    );
+    static bool fulfillShortage(ShortageManager& shortageMgr, DrugManager& drugMgr);
 };

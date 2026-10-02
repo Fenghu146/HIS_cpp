@@ -21,9 +21,7 @@ public:
     string getNameById(const string& id) const;
     bool hasDrugAssociation(const string& dept_id, DrugManager& drugMgr);
 
-    DepartmentManager() : DataManager(FILE_DEPT){}
+    DepartmentManager() : DataManager(FILE_DEPT) {}
 
-    string generateId() {
-        return string(1, ID_DEPT) + to_string(next_id++);
-    }
+    string generateId() { return string(1, ID_DEPT) + to_string(next_id++); }
 };

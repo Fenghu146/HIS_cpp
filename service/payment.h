@@ -11,19 +11,11 @@
 class PaymentService {
 public:
     // 缴费：患者支付未缴费处方 → 扣余额 → 状态变"已缴费"
-    static bool payPrescription(
-        PatientManager& patientMgr,
-        PrescriptionManager& prescriptionMgr,
-        DrugManager& drugMgr,
-        const string& patient_id
-    );
+    static bool payPrescription(PatientManager& patientMgr, PrescriptionManager& prescriptionMgr,
+                                DrugManager& drugMgr, const string& patient_id);
 
     // 取药：已缴费处方 → 逐项出库 → 状态变"已取药"
     // 库存不足时登记缺药并返回 false
-    static bool dispensePrescription(
-        PrescriptionManager& prescriptionMgr,
-        DrugManager& drugMgr,
-        ShortageManager& shortageMgr,
-        const string& patient_id
-    );
+    static bool dispensePrescription(PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                                     ShortageManager& shortageMgr, const string& patient_id);
 };

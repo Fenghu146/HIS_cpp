@@ -2,13 +2,9 @@
 #include "../utils/input.h"
 #include "../config/his_config.h"
 
-bool HospitalizationService::admitPatient(
-    PatientManager& patientMgr,
-    BedManager& bedMgr,
-    MedicalRecordManager& recordMgr,
-    DoctorManager& doctorMgr,
-    const string& patient_id) {
-
+bool HospitalizationService::admitPatient(PatientManager& patientMgr, BedManager& bedMgr,
+                                          MedicalRecordManager& recordMgr, DoctorManager& doctorMgr,
+                                          const string& patient_id) {
     Patient* p = patientMgr.findPatient(patient_id);
     if (!p) {
         cout << "[错误] 未找到患者 " << patient_id << endl;
@@ -60,9 +56,8 @@ bool HospitalizationService::admitPatient(
     cout << "建议住院科室：" << doctor->dept_name << "\n";
     cout << "\n可用床位：\n";
     for (size_t i = 0; i < freeBeds.size(); i++) {
-        cout << "  " << (i + 1) << ". " << freeBeds[i]->bed_number
-             << " (" << freeBeds[i]->id << ") 类型:" << freeBeds[i]->type
-             << " 日费:" << freeBeds[i]->daily_price << "分/天\n";
+        cout << "  " << (i + 1) << ". " << freeBeds[i]->bed_number << " (" << freeBeds[i]->id
+             << ") 类型:" << freeBeds[i]->type << " 日费:" << freeBeds[i]->daily_price << "分/天\n";
     }
     cout << "  0. 取消\n";
     cout << "请选择床位序号：";
@@ -73,7 +68,8 @@ bool HospitalizationService::admitPatient(
     }
 
     Bed* bed = freeBeds[idx - 1];
-    cout << "确认入住 " << bed->bed_number << "（" << bed->type << "，日费" << bed->daily_price << "分/天）？(y/n)：";
+    cout << "确认入住 " << bed->bed_number << "（" << bed->type << "，日费" << bed->daily_price
+         << "分/天）？(y/n)：";
     if (!getConfirm()) {
         cout << "已取消住院。\n";
         return false;
@@ -81,15 +77,16 @@ bool HospitalizationService::admitPatient(
 
     // 扣首日费
     if (p->balance < bed->daily_price) {
-        cout << "[错误] 余额不足！需要 " << bed->daily_price << " 分，当前 " << p->balance << " 分。\n";
+        cout << "[错误] 余额不足！需要 " << bed->daily_price << " 分，当前 " << p->balance
+             << " 分。\n";
         return false;
     }
     p->balance -= bed->daily_price;
     patientMgr.markDirty();
     patientMgr.save();
     bedMgr.occupyBed(bed->id, patient_id);
-    cout << "住院办理成功！床位：" << bed->bed_number
-         << "，扣除首日费：" << bed->daily_price << " 分\n";
+    cout << "住院办理成功！床位：" << bed->bed_number << "，扣除首日费：" << bed->daily_price
+         << " 分\n";
     cout << "当前余额：" << p->balance << " 分\n";
     return true;
 }

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <sstream>
 
-template<typename T>
+template <typename T>
 class DataManager {
 public:
     string filename;
@@ -20,5 +20,3 @@ public:
     virtual void save() = 0;
     virtual ~DataManager() = default;
 };
-
-

@@ -23,9 +23,7 @@ public:
     int countBedsByDept(const string& dept_id) const;
     int countAvailableBedsByDept(const string& dept_id) const;
 
-    BedManager() : DataManager(FILE_BED){}
+    BedManager() : DataManager(FILE_BED) {}
 
-    string generateId() {
-        return string(1, ID_BED) + to_string(next_id++);
-    }
+    string generateId() { return string(1, ID_BED) + to_string(next_id++); }
 };

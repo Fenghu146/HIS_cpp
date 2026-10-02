@@ -10,7 +10,8 @@ int DrugManager::next_id = 1;
 // 辅助：去除字符串前后空格
 static string trim(const string& s) {
     size_t start = s.find_first_not_of(" \t");
-    if (start == string::npos) return "";
+    if (start == string::npos)
+        return "";
     size_t end = s.find_last_not_of(" \t");
     return s.substr(start, end - start + 1);
 }
@@ -22,7 +23,8 @@ static vector<string> splitIds(const string& s) {
     string token;
     while (getline(ss, token, ',')) {
         token = trim(token);
-        if (!token.empty()) result.push_back(token);
+        if (!token.empty())
+            result.push_back(token);
     }
     return result;
 }
@@ -30,7 +32,8 @@ static vector<string> splitIds(const string& s) {
 // 辅助：把用户输入的预警阈值转换为数值
 // 输入为空或 "0" 表示自动计算；输入非法时回退为自动计算并给出提示
 static int resolveWarningStock(const string& input, int maxStock) {
-    if (input.empty() || input == "0") return DrugManager::calcWarningStock(maxStock);
+    if (input.empty() || input == "0")
+        return DrugManager::calcWarningStock(maxStock);
 
     int value = 0;
     if (!parseInt(input, value)) {
@@ -42,7 +45,8 @@ static int resolveWarningStock(const string& input, int maxStock) {
 
 void DrugManager::load() {
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -54,11 +58,15 @@ void DrugManager::load() {
         getline(ss, d->general_name, '|');
         getline(ss, d->trade_name, '|');
         getline(ss, d->alias, '|');
-        getline(ss, field, '|'); d->price = stof(field);
-        getline(ss, field, '|'); d->stock = stoi(field);
-        getline(ss, field, '|'); d->warning_stock = stoi(field);
+        getline(ss, field, '|');
+        d->price = stof(field);
+        getline(ss, field, '|');
+        d->stock = stoi(field);
+        getline(ss, field, '|');
+        d->warning_stock = stoi(field);
         getline(ss, d->dept_ids, '|');
-        getline(ss, field, '|'); d->max_stock = stoi(field);
+        getline(ss, field, '|');
+        d->max_stock = stoi(field);
 
         list.push_back(std::move(d));
     }
@@ -67,24 +75,20 @@ void DrugManager::load() {
     for (auto& d : list) {
         if (d->id.length() > 1 && d->id[0] == ID_DRUG) {
             int num = stoi(d->id.substr(1));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
 
 void DrugManager::save() {
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& d : list) {
-        out << d->id << '|'
-            << d->general_name << '|'
-            << d->trade_name << '|'
-            << d->alias << '|'
-            << d->price << '|'
-            << d->stock << '|'
-            << d->warning_stock << '|'
-            << d->dept_ids << '|'
+        out << d->id << '|' << d->general_name << '|' << d->trade_name << '|' << d->alias << '|'
+            << d->price << '|' << d->stock << '|' << d->warning_stock << '|' << d->dept_ids << '|'
             << d->max_stock << '\n';
     }
     out.close();
@@ -103,25 +107,23 @@ void DrugManager::printDeptList(const DepartmentManager& deptMgr) {
 }
 
 string DrugManager::getDeptIdByIndex(const DepartmentManager& deptMgr, int index) {
-    if (index < 1 || index > static_cast<int>(deptMgr.list.size())) return "";
+    if (index < 1 || index > static_cast<int>(deptMgr.list.size()))
+        return "";
     return deptMgr.list[index - 1]->id;
 }
 
 void DrugManager::displayDrug(const Drug& d, const DepartmentManager& deptMgr) {
-    cout << "ID: " << d.id
-         << " | 通用名: " << d.general_name
+    cout << "ID: " << d.id << " | 通用名: " << d.general_name
          << " | 商品名: " << (d.trade_name.empty() ? "-" : d.trade_name)
-         << " | 别名: " << (d.alias.empty() ? "-" : d.alias)
-         << " | 单价: " << d.price
-         << " | 库存: " << d.stock
-         << " | 阈值: " << d.warning_stock
-         << " | 科室: ";
+         << " | 别名: " << (d.alias.empty() ? "-" : d.alias) << " | 单价: " << d.price
+         << " | 库存: " << d.stock << " | 阈值: " << d.warning_stock << " | 科室: ";
     if (d.dept_ids.empty()) {
         cout << "通用";
     } else {
         vector<string> ids = splitIds(d.dept_ids);
         for (size_t i = 0; i < ids.size(); i++) {
-            if (i > 0) cout << ",";
+            if (i > 0)
+                cout << ",";
             string name = deptMgr.getNameById(ids[i]);
             cout << (name.empty() ? ids[i] : name);
         }
@@ -132,12 +134,16 @@ void DrugManager::displayDrug(const Drug& d, const DepartmentManager& deptMgr) {
 void DrugManager::registerDrug(DepartmentManager& deptMgr) {
     auto d = make_unique<Drug>();
 
-    cout << "请输入通用名："; inputLine(d->general_name);
-    cout << "请输入商品名（可空）："; inputLine(d->trade_name);
-    cout << "请输入别名（可空）："; inputLine(d->alias);
+    cout << "请输入通用名：";
+    inputLine(d->general_name);
+    cout << "请输入商品名（可空）：";
+    inputLine(d->trade_name);
+    cout << "请输入别名（可空）：";
+    inputLine(d->alias);
 
     cout << "请输入单价（分）：";
-    string priceStr; inputLine(priceStr);
+    string priceStr;
+    inputLine(priceStr);
     float priceFen = 0.0f;
     if (!parseFloat(priceStr, priceFen)) {
         cout << "[错误] 单价格式不正确！\n";
@@ -146,14 +152,16 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
     d->price = priceFen / 100.0f;
 
     cout << "请输入初始库存：";
-    string stockStr; inputLine(stockStr);
+    string stockStr;
+    inputLine(stockStr);
     if (!parseInt(stockStr, d->stock)) {
         cout << "[错误] 库存必须为非负整数！\n";
         return;
     }
 
     cout << "请输入最大库存（可空，用于预警计算）：";
-    string maxStr; inputLine(maxStr);
+    string maxStr;
+    inputLine(maxStr);
     d->max_stock = 0;
     if (!maxStr.empty() && !parseInt(maxStr, d->max_stock)) {
         cout << "[错误] 最大库存必须为非负整数！\n";
@@ -161,14 +169,16 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
     }
 
     cout << "请输入预警阈值（0=自动计算）：";
-    string warnStr; inputLine(warnStr);
+    string warnStr;
+    inputLine(warnStr);
     d->warning_stock = resolveWarningStock(warnStr, d->max_stock);
 
     // 科室选择：打印编号列表，输入序号
     cout << "请选择适用科室（输入序号，逗号分隔，可空=通用药品）：\n";
     printDeptList(deptMgr);
     cout << "  请输入序号：";
-    string idxInput; inputLine(idxInput);
+    string idxInput;
+    inputLine(idxInput);
 
     if (!idxInput.empty()) {
         vector<string> idxParts = splitIds(idxInput);
@@ -189,7 +199,8 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
         // 拼接ID
         string idsStr;
         for (size_t i = 0; i < validIds.size(); i++) {
-            if (i > 0) idsStr += ",";
+            if (i > 0)
+                idsStr += ",";
             idsStr += validIds[i];
         }
         d->dept_ids = idsStr;
@@ -204,11 +215,11 @@ void DrugManager::registerDrug(DepartmentManager& deptMgr) {
     cout << "注册成功！ID：" << newId << endl;
 }
 
-Drug *DrugManager::findDrug(const string &id) {
+Drug* DrugManager::findDrug(const string& id) {
     return findById(list, id);
 }
 
-bool DrugManager::deleteDrug(const string &id) {
+bool DrugManager::deleteDrug(const string& id) {
     Drug* d = findDrug(id);
     if (!d) {
         cout << "未找到药品\n";
@@ -219,7 +230,8 @@ bool DrugManager::deleteDrug(const string &id) {
         return false;
     }
     bool ok = removeById(list, id);
-    if (ok) save();
+    if (ok)
+        save();
     return ok;
 }
 
@@ -233,7 +245,7 @@ void DrugManager::listDrug(DepartmentManager& deptMgr) {
     }
 }
 
-bool DrugManager::stockIn(const string &id, int amount) {
+bool DrugManager::stockIn(const string& id, int amount) {
     Drug* d = findDrug(id);
     if (!d) {
         cout << "未找到药品\n";
@@ -249,7 +261,7 @@ bool DrugManager::stockIn(const string &id, int amount) {
     return true;
 }
 
-bool DrugManager::stockOut(const string &id, int amount) {
+bool DrugManager::stockOut(const string& id, int amount) {
     Drug* d = findDrug(id);
     if (!d) {
         cout << "未找到药品\n";
@@ -284,7 +296,8 @@ void DrugManager::warningList(DepartmentManager& deptMgr) {
 
 void DrugManager::modifyDrug(DepartmentManager& deptMgr) {
     cout << "请输入要修改的药品ID：";
-    string id; inputLine(id);
+    string id;
+    inputLine(id);
     Drug* d = findDrug(id);
     if (!d) {
         cout << "未找到药品\n";
@@ -305,37 +318,46 @@ void DrugManager::modifyDrug(DepartmentManager& deptMgr) {
 
     int choice = getValidChoice(0, 6);
     switch (choice) {
-        case 1: {
-            cout << "请输入新通用名："; inputLine(d->general_name); break;
+    case 1: {
+        cout << "请输入新通用名：";
+        inputLine(d->general_name);
+        break;
+    }
+    case 2: {
+        cout << "请输入新商品名：";
+        inputLine(d->trade_name);
+        break;
+    }
+    case 3: {
+        cout << "请输入新别名：";
+        inputLine(d->alias);
+        break;
+    }
+    case 4: {
+        cout << "请输入新单价（分）：";
+        string priceStr;
+        inputLine(priceStr);
+        float priceFen = 0.0f;
+        if (!parseFloat(priceStr, priceFen)) {
+            cout << "[错误] 单价格式不正确，未修改。\n";
+            return;
         }
-        case 2: {
-            cout << "请输入新商品名："; inputLine(d->trade_name); break;
-        }
-        case 3: {
-            cout << "请输入新别名："; inputLine(d->alias); break;
-        }
-        case 4: {
-            cout << "请输入新单价（分）：";
-            string priceStr; inputLine(priceStr);
-            float priceFen = 0.0f;
-            if (!parseFloat(priceStr, priceFen)) {
-                cout << "[错误] 单价格式不正确，未修改。\n";
-                return;
-            }
-            d->price = priceFen / 100.0f;
-            break;
-        }
-        case 5: {
-            cout << "请输入新预警阈值（0=自动计算）：";
-            string warnStr; inputLine(warnStr);
-            d->warning_stock = resolveWarningStock(warnStr, d->max_stock);
-            break;
-        }
-        case 6: {
-            modifyDeptIds(*d, deptMgr);
-            break;
-        }
-        case 0: return;
+        d->price = priceFen / 100.0f;
+        break;
+    }
+    case 5: {
+        cout << "请输入新预警阈值（0=自动计算）：";
+        string warnStr;
+        inputLine(warnStr);
+        d->warning_stock = resolveWarningStock(warnStr, d->max_stock);
+        break;
+    }
+    case 6: {
+        modifyDeptIds(*d, deptMgr);
+        break;
+    }
+    case 0:
+        return;
     }
     save();
     cout << "修改成功！\n";
@@ -348,7 +370,8 @@ void DrugManager::modifyDeptIds(Drug& d, DepartmentManager& deptMgr) {
     } else {
         vector<string> ids = splitIds(d.dept_ids);
         for (size_t i = 0; i < ids.size(); i++) {
-            if (i > 0) cout << ",";
+            if (i > 0)
+                cout << ",";
             cout << deptMgr.getNameById(ids[i]);
         }
         cout << "\n";
@@ -357,7 +380,8 @@ void DrugManager::modifyDeptIds(Drug& d, DepartmentManager& deptMgr) {
     cout << "请重新选择科室（输入序号，逗号分隔，可空=通用药品）：\n";
     printDeptList(deptMgr);
     cout << "  请输入序号：";
-    string idxInput; inputLine(idxInput);
+    string idxInput;
+    inputLine(idxInput);
 
     if (idxInput.empty()) {
         d.dept_ids = "";
@@ -382,7 +406,8 @@ void DrugManager::modifyDeptIds(Drug& d, DepartmentManager& deptMgr) {
 
     string idsStr;
     for (size_t i = 0; i < validIds.size(); i++) {
-        if (i > 0) idsStr += ",";
+        if (i > 0)
+            idsStr += ",";
         idsStr += validIds[i];
     }
     d.dept_ids = idsStr;

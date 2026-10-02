@@ -28,34 +28,32 @@ void showDoctorMgmtMenu(DoctorManager& mgr, DepartmentManager& deptMgr);
 void showDeptMgmtMenu(DepartmentManager& deptMgr, DoctorManager& docMgr, DrugManager& drugMgr);
 void showDrugMgmtMenu(DrugManager& drugMgr, DepartmentManager& deptMgr);
 void showBedMgmtMenu(BedManager& bedMgr, DepartmentManager& deptMgr);
-void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, ShortageManager& shortageMgr);
+void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr,
+                      ShortageManager& shortageMgr);
 void showPatientMenu(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                      PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                      ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                     DoctorManager& doctorMgr, DepartmentManager& deptMgr,
-                     BedManager& bedMgr);
+                     DoctorManager& doctorMgr, DepartmentManager& deptMgr, BedManager& bedMgr);
 void showDoctorMenu(AppointmentManager& appointmentMgr, MedicalRecordManager& recordMgr,
-                     PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
-                     DepartmentManager& deptMgr, ShortageManager& shortageMgr,
-                     DoctorManager& doctorMgr, BedManager& bedMgr);
+                    PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                    DepartmentManager& deptMgr, ShortageManager& shortageMgr,
+                    DoctorManager& doctorMgr, BedManager& bedMgr);
 void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                       PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                       ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                      DoctorManager& doctorMgr, DepartmentManager& deptMgr,
-                      BedManager& bedMgr);
+                      DoctorManager& doctorMgr, DepartmentManager& deptMgr, BedManager& bedMgr);
 void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMgr,
                      MedicalRecordManager& recordMgr, PrescriptionManager& prescriptionMgr,
                      DrugManager& drugMgr, DepartmentManager& deptMgr,
                      ShortageManager& shortageMgr);
 void adminLoginFlow(PatientManager& patientMgr, DoctorManager& doctorMgr,
-                    DepartmentManager& deptMgr, DrugManager& drugMgr,
-                    BedManager& bedMgr, ShortageManager& shortageMgr);
+                    DepartmentManager& deptMgr, DrugManager& drugMgr, BedManager& bedMgr,
+                    ShortageManager& shortageMgr);
 
 // ==================== 管理员菜单（整合现有管理功能）====================
 
-void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
-                   DepartmentManager& deptMgr, DrugManager& drugMgr,
-                   BedManager& bedMgr, ShortageManager& shortageMgr) {
+void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr, DepartmentManager& deptMgr,
+                   DrugManager& drugMgr, BedManager& bedMgr, ShortageManager& shortageMgr) {
     while (true) {
         cout << "\n=== 管理员菜单 ===\n";
         cout << "1. 患者管理\n";
@@ -69,17 +67,31 @@ void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
 
         int choice = getValidChoice(0, 7);
         switch (choice) {
-            case 1: showPatientMgmtMenu(patientMgr); break;
-            case 2: showDoctorMgmtMenu(doctorMgr, deptMgr); break;
-            case 3: showDeptMgmtMenu(deptMgr, doctorMgr, drugMgr); break;
-            case 4: showDrugMgmtMenu(drugMgr, deptMgr); break;
-            case 5: showBedMgmtMenu(bedMgr, deptMgr); break;
-            case 6: showPharmacyMenu(drugMgr, deptMgr, shortageMgr); break;
-            case 7: HospitalizationService::listHospitalized(bedMgr); break;
-            case 0:
-                LogService::logLogout("admin", Session::getInstance()->getUserId());
-                Session::getInstance()->logout();
-                return;
+        case 1:
+            showPatientMgmtMenu(patientMgr);
+            break;
+        case 2:
+            showDoctorMgmtMenu(doctorMgr, deptMgr);
+            break;
+        case 3:
+            showDeptMgmtMenu(deptMgr, doctorMgr, drugMgr);
+            break;
+        case 4:
+            showDrugMgmtMenu(drugMgr, deptMgr);
+            break;
+        case 5:
+            showBedMgmtMenu(bedMgr, deptMgr);
+            break;
+        case 6:
+            showPharmacyMenu(drugMgr, deptMgr, shortageMgr);
+            break;
+        case 7:
+            HospitalizationService::listHospitalized(bedMgr);
+            break;
+        case 0:
+            LogService::logLogout("admin", Session::getInstance()->getUserId());
+            Session::getInstance()->logout();
+            return;
         }
     }
 }
@@ -98,37 +110,50 @@ void showPatientMgmtMenu(PatientManager& mgr) {
 
         int choice = getValidChoice(0, 5);
         switch (choice) {
-            case 1: mgr.registerPatient(); break;
-            case 2: {
-                cout << "请输入患者ID:";
-                string id; inputLine(id);
-                Patient* p = mgr.findPatient(id);
-                if (p) cout << *p << endl;
-                else cout << "未找到患者\n";
+        case 1:
+            mgr.registerPatient();
+            break;
+        case 2: {
+            cout << "请输入患者ID:";
+            string id;
+            inputLine(id);
+            Patient* p = mgr.findPatient(id);
+            if (p)
+                cout << *p << endl;
+            else
+                cout << "未找到患者\n";
+            break;
+        }
+        case 3: {
+            cout << "请输入患者ID:";
+            string id;
+            inputLine(id);
+            if (mgr.deletePatient(id))
+                cout << "删除成功\n";
+            else
+                cout << "未找到患者\n";
+            break;
+        }
+        case 4:
+            mgr.listPatient();
+            break;
+        case 5: {
+            cout << "请输入患者ID:";
+            string id;
+            inputLine(id);
+            cout << "请输入充值金额（分）:";
+            string amtStr;
+            inputLine(amtStr);
+            long long amt = 0;
+            if (!parseLongLong(amtStr, amt)) {
+                cout << "[错误] 充值金额必须为非负整数！\n";
                 break;
             }
-            case 3: {
-                cout << "请输入患者ID:";
-                string id; inputLine(id);
-                if (mgr.deletePatient(id)) cout << "删除成功\n";
-                else cout << "未找到患者\n";
-                break;
-            }
-            case 4: mgr.listPatient(); break;
-            case 5: {
-                cout << "请输入患者ID:";
-                string id; inputLine(id);
-                cout << "请输入充值金额（分）:";
-                string amtStr; inputLine(amtStr);
-                long long amt = 0;
-                if (!parseLongLong(amtStr, amt)) {
-                    cout << "[错误] 充值金额必须为非负整数！\n";
-                    break;
-                }
-                mgr.recharge(id, amt);
-                break;
-            }
-            case 0: return;
+            mgr.recharge(id, amt);
+            break;
+        }
+        case 0:
+            return;
         }
     }
 }
@@ -146,26 +171,37 @@ void showDoctorMgmtMenu(DoctorManager& mgr, DepartmentManager& deptMgr) {
 
         int choice = getValidChoice(0, 4);
         switch (choice) {
-            case 1: mgr.registerDoctor([&deptMgr](const string& name) {
-                        return deptMgr.findDepartmentByName(name) != nullptr;
-                    }); break;
-            case 2: {
-                cout << "请输入医生ID:";
-                string id; inputLine(id);
-                Doctor* d = mgr.findDoctor(id);
-                if (d) cout << *d << endl;
-                else cout << "未找到医生\n";
-                break;
-            }
-            case 3: {
-                cout << "请输入医生ID:";
-                string id; inputLine(id);
-                if (mgr.deleteDoctor(id)) cout << "删除成功\n";
-                else cout << "未找到医生\n";
-                break;
-            }
-            case 4: mgr.listDoctor(); break;
-            case 0: return;
+        case 1:
+            mgr.registerDoctor([&deptMgr](const string& name) {
+                return deptMgr.findDepartmentByName(name) != nullptr;
+            });
+            break;
+        case 2: {
+            cout << "请输入医生ID:";
+            string id;
+            inputLine(id);
+            Doctor* d = mgr.findDoctor(id);
+            if (d)
+                cout << *d << endl;
+            else
+                cout << "未找到医生\n";
+            break;
+        }
+        case 3: {
+            cout << "请输入医生ID:";
+            string id;
+            inputLine(id);
+            if (mgr.deleteDoctor(id))
+                cout << "删除成功\n";
+            else
+                cout << "未找到医生\n";
+            break;
+        }
+        case 4:
+            mgr.listDoctor();
+            break;
+        case 0:
+            return;
         }
     }
 }
@@ -183,24 +219,35 @@ void showDeptMgmtMenu(DepartmentManager& deptMgr, DoctorManager& docMgr, DrugMan
 
         int choice = getValidChoice(0, 4);
         switch (choice) {
-            case 1: deptMgr.registerDepartment(); break;
-            case 2: {
-                cout << "请输入科室ID:";
-                string id; inputLine(id);
-                Department* d = deptMgr.findDepartment(id);
-                if (d) cout << *d << endl;
-                else cout << "未找到科室\n";
-                break;
-            }
-            case 3: {
-                cout << "请输入科室ID:";
-                string id; inputLine(id);
-                if (deptMgr.deleteDepartment(id, docMgr, drugMgr)) cout << "删除成功\n";
-                else cout << "删除失败\n";
-                break;
-            }
-            case 4: deptMgr.listDepartment(docMgr); break;
-            case 0: return;
+        case 1:
+            deptMgr.registerDepartment();
+            break;
+        case 2: {
+            cout << "请输入科室ID:";
+            string id;
+            inputLine(id);
+            Department* d = deptMgr.findDepartment(id);
+            if (d)
+                cout << *d << endl;
+            else
+                cout << "未找到科室\n";
+            break;
+        }
+        case 3: {
+            cout << "请输入科室ID:";
+            string id;
+            inputLine(id);
+            if (deptMgr.deleteDepartment(id, docMgr, drugMgr))
+                cout << "删除成功\n";
+            else
+                cout << "删除失败\n";
+            break;
+        }
+        case 4:
+            deptMgr.listDepartment(docMgr);
+            break;
+        case 0:
+            return;
         }
     }
 }
@@ -222,46 +269,71 @@ void showDrugMgmtMenu(DrugManager& drugMgr, DepartmentManager& deptMgr) {
 
         int choice = getValidChoice(0, 8);
         switch (choice) {
-            case 1: drugMgr.registerDrug(deptMgr); break;
-            case 2: {
-                cout << "请输入药品ID:";
-                string id; inputLine(id);
-                Drug* d = drugMgr.findDrug(id);
-                if (d) DrugManager::displayDrug(*d, deptMgr);
-                else cout << "未找到药品\n";
+        case 1:
+            drugMgr.registerDrug(deptMgr);
+            break;
+        case 2: {
+            cout << "请输入药品ID:";
+            string id;
+            inputLine(id);
+            Drug* d = drugMgr.findDrug(id);
+            if (d)
+                DrugManager::displayDrug(*d, deptMgr);
+            else
+                cout << "未找到药品\n";
+            break;
+        }
+        case 3: {
+            cout << "请输入药品ID:";
+            string id;
+            inputLine(id);
+            if (drugMgr.deleteDrug(id))
+                cout << "删除成功\n";
+            else
+                cout << "删除失败\n";
+            break;
+        }
+        case 4:
+            drugMgr.listDrug(deptMgr);
+            break;
+        case 5: {
+            cout << "请输入药品ID:";
+            string id;
+            inputLine(id);
+            cout << "请输入入库数量：";
+            string amt;
+            inputLine(amt);
+            int qty = 0;
+            if (!parseInt(amt, qty)) {
+                cout << "[错误] 数量必须为非负整数！\n";
                 break;
             }
-            case 3: {
-                cout << "请输入药品ID:";
-                string id; inputLine(id);
-                if (drugMgr.deleteDrug(id)) cout << "删除成功\n";
-                else cout << "删除失败\n";
+            drugMgr.stockIn(id, qty);
+            break;
+        }
+        case 6: {
+            cout << "请输入药品ID:";
+            string id;
+            inputLine(id);
+            cout << "请输入出库数量：";
+            string amt;
+            inputLine(amt);
+            int qty = 0;
+            if (!parseInt(amt, qty)) {
+                cout << "[错误] 数量必须为非负整数！\n";
                 break;
             }
-            case 4: drugMgr.listDrug(deptMgr); break;
-            case 5: {
-                cout << "请输入药品ID:";
-                string id; inputLine(id);
-                cout << "请输入入库数量：";
-                string amt; inputLine(amt);
-                int qty = 0;
-                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
-                drugMgr.stockIn(id, qty);
-                break;
-            }
-            case 6: {
-                cout << "请输入药品ID:";
-                string id; inputLine(id);
-                cout << "请输入出库数量：";
-                string amt; inputLine(amt);
-                int qty = 0;
-                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
-                drugMgr.stockOut(id, qty);
-                break;
-            }
-            case 7: drugMgr.warningList(deptMgr); break;
-            case 8: drugMgr.modifyDrug(deptMgr); break;
-            case 0: return;
+            drugMgr.stockOut(id, qty);
+            break;
+        }
+        case 7:
+            drugMgr.warningList(deptMgr);
+            break;
+        case 8:
+            drugMgr.modifyDrug(deptMgr);
+            break;
+        case 0:
+            return;
         }
     }
 }
@@ -280,49 +352,72 @@ void showBedMgmtMenu(BedManager& bedMgr, DepartmentManager& deptMgr) {
 
         int choice = getValidChoice(0, 5);
         switch (choice) {
-            case 1: bedMgr.registerBed(deptMgr); break;
-            case 2: {
-                cout << "请输入床位ID：";
-                string id; inputLine(id);
-                Bed* b = bedMgr.findBed(id);
-                if (b) cout << *b << endl;
-                else cout << "未找到床位\n";
+        case 1:
+            bedMgr.registerBed(deptMgr);
+            break;
+        case 2: {
+            cout << "请输入床位ID：";
+            string id;
+            inputLine(id);
+            Bed* b = bedMgr.findBed(id);
+            if (b)
+                cout << *b << endl;
+            else
+                cout << "未找到床位\n";
+            break;
+        }
+        case 3: {
+            cout << "请输入床位ID：";
+            string id;
+            inputLine(id);
+            if (bedMgr.deleteBed(id))
+                cout << "删除成功\n";
+            else
+                cout << "删除失败\n";
+            break;
+        }
+        case 4:
+            bedMgr.listBed();
+            break;
+        case 5: {
+            cout << "请输入床位ID：";
+            string id;
+            inputLine(id);
+            Bed* b = bedMgr.findBed(id);
+            if (!b) {
+                cout << "未找到床位\n";
                 break;
             }
-            case 3: {
-                cout << "请输入床位ID：";
-                string id; inputLine(id);
-                if (bedMgr.deleteBed(id)) cout << "删除成功\n";
-                else cout << "删除失败\n";
+            cout << "当前状态：" << b->status << endl;
+            cout << "  1. 空闲\n  2. 占用\n  3. 清洁中\n";
+            cout << "请选择新状态：";
+            int s = getValidChoice(1, 3);
+            string status;
+            switch (s) {
+            case 1:
+                status = "空闲";
+                break;
+            case 2:
+                status = "占用";
+                break;
+            case 3:
+                status = "清洁中";
                 break;
             }
-            case 4: bedMgr.listBed(); break;
-            case 5: {
-                cout << "请输入床位ID：";
-                string id; inputLine(id);
-                Bed* b = bedMgr.findBed(id);
-                if (!b) { cout << "未找到床位\n"; break; }
-                cout << "当前状态：" << b->status << endl;
-                cout << "  1. 空闲\n  2. 占用\n  3. 清洁中\n";
-                cout << "请选择新状态：";
-                int s = getValidChoice(1, 3);
-                string status;
-                switch (s) {
-                    case 1: status = "空闲"; break;
-                    case 2: status = "占用"; break;
-                    case 3: status = "清洁中"; break;
-                }
-                if (bedMgr.changeStatus(id, status)) cout << "状态已更新为：" << status << endl;
-                break;
-            }
-            case 0: return;
+            if (bedMgr.changeStatus(id, status))
+                cout << "状态已更新为：" << status << endl;
+            break;
+        }
+        case 0:
+            return;
         }
     }
 }
 
 // ==================== 药房管理子菜单 ====================
 
-void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, ShortageManager& shortageMgr) {
+void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr,
+                      ShortageManager& shortageMgr) {
     while (true) {
         cout << "\n=== 药房管理 ===\n";
         cout << "1. 药品入库\n";
@@ -334,45 +429,57 @@ void showPharmacyMenu(DrugManager& drugMgr, DepartmentManager& deptMgr, Shortage
 
         int choice = getValidChoice(0, 5);
         switch (choice) {
-            case 1: {
-                cout << "请输入药品ID：";
-                string id; inputLine(id);
-                cout << "请输入入库数量：";
-                string amt; inputLine(amt);
-                int qty = 0;
-                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
-                drugMgr.stockIn(id, qty);
+        case 1: {
+            cout << "请输入药品ID：";
+            string id;
+            inputLine(id);
+            cout << "请输入入库数量：";
+            string amt;
+            inputLine(amt);
+            int qty = 0;
+            if (!parseInt(amt, qty)) {
+                cout << "[错误] 数量必须为非负整数！\n";
                 break;
             }
-            case 2: {
-                cout << "请输入药品ID：";
-                string id; inputLine(id);
-                cout << "请输入出库数量：";
-                string amt; inputLine(amt);
-                int qty = 0;
-                if (!parseInt(amt, qty)) { cout << "[错误] 数量必须为非负整数！\n"; break; }
-                drugMgr.stockOut(id, qty);
+            drugMgr.stockIn(id, qty);
+            break;
+        }
+        case 2: {
+            cout << "请输入药品ID：";
+            string id;
+            inputLine(id);
+            cout << "请输入出库数量：";
+            string amt;
+            inputLine(amt);
+            int qty = 0;
+            if (!parseInt(amt, qty)) {
+                cout << "[错误] 数量必须为非负整数！\n";
                 break;
             }
-            case 3: drugMgr.warningList(deptMgr); break;
-            case 4: ShortageService::viewPendingShortages(shortageMgr); break;
-            case 5: ShortageService::fulfillShortage(shortageMgr, drugMgr); break;
-            case 0: return;
+            drugMgr.stockOut(id, qty);
+            break;
+        }
+        case 3:
+            drugMgr.warningList(deptMgr);
+            break;
+        case 4:
+            ShortageService::viewPendingShortages(shortageMgr);
+            break;
+        case 5:
+            ShortageService::fulfillShortage(shortageMgr, drugMgr);
+            break;
+        case 0:
+            return;
         }
     }
 }
 
 // ==================== 患者入口菜单 ====================
 
-void showPatientMenu(PatientManager& patientMgr,
-                     MedicalRecordManager& recordMgr,
-                     PrescriptionManager& prescriptionMgr,
-                     DrugManager& drugMgr,
-                     ShortageManager& shortageMgr,
-                     AppointmentManager& appointmentMgr,
-                     DoctorManager& doctorMgr,
-                     DepartmentManager& deptMgr,
-                     BedManager& bedMgr) {
+void showPatientMenu(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
+                     PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                     ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
+                     DoctorManager& doctorMgr, DepartmentManager& deptMgr, BedManager& bedMgr) {
     string patientId = Session::getInstance()->getUserId();
     Patient* p = patientMgr.findPatient(patientId);
     if (!p) {
@@ -395,59 +502,60 @@ void showPatientMenu(PatientManager& patientMgr,
 
         int choice = getValidChoice(0, 8);
         switch (choice) {
-            case 1:
-                RegistrationService::registerPatient(patientMgr, doctorMgr, deptMgr, appointmentMgr);
-                break;
-            case 2:
-                recordMgr.listByPatient(patientId);
-                break;
-            case 3:
-                prescriptionMgr.listByPatient(patientId);
-                break;
-            case 4: {
-                cout << "请输入充值金额（分）：";
-                string amtStr; inputLine(amtStr);
-                long long amt = 0;
-                if (!parseLongLong(amtStr, amt)) {
-                    cout << "[错误] 充值金额必须为非负整数！\n";
-                    break;
-                }
-                patientMgr.recharge(patientId, amt);
+        case 1:
+            RegistrationService::registerPatient(patientMgr, doctorMgr, deptMgr, appointmentMgr);
+            break;
+        case 2:
+            recordMgr.listByPatient(patientId);
+            break;
+        case 3:
+            prescriptionMgr.listByPatient(patientId);
+            break;
+        case 4: {
+            cout << "请输入充值金额（分）：";
+            string amtStr;
+            inputLine(amtStr);
+            long long amt = 0;
+            if (!parseLongLong(amtStr, amt)) {
+                cout << "[错误] 充值金额必须为非负整数！\n";
                 break;
             }
-            case 5:
-                PaymentService::payPrescription(patientMgr, prescriptionMgr, drugMgr, patientId);
-                break;
-            case 6:
-                PaymentService::dispensePrescription(prescriptionMgr, drugMgr, shortageMgr, patientId);
-                break;
-            case 7: {
-                cout << "请输入原密码：";
-                string oldPin; inputLine(oldPin);
-                cout << "请输入新密码：";
-                string newPin; inputLine(newPin);
-                patientMgr.changePin(patientId, oldPin, newPin);
-                break;
-            }
-            case 8:
-                HospitalizationService::admitPatient(patientMgr, bedMgr, recordMgr, doctorMgr, patientId);
-                break;
-            case 0:
-                LogService::logLogout("patient", patientId);
-                Session::getInstance()->logout();
-                return;
+            patientMgr.recharge(patientId, amt);
+            break;
+        }
+        case 5:
+            PaymentService::payPrescription(patientMgr, prescriptionMgr, drugMgr, patientId);
+            break;
+        case 6:
+            PaymentService::dispensePrescription(prescriptionMgr, drugMgr, shortageMgr, patientId);
+            break;
+        case 7: {
+            cout << "请输入原密码：";
+            string oldPin;
+            inputLine(oldPin);
+            cout << "请输入新密码：";
+            string newPin;
+            inputLine(newPin);
+            patientMgr.changePin(patientId, oldPin, newPin);
+            break;
+        }
+        case 8:
+            HospitalizationService::admitPatient(patientMgr, bedMgr, recordMgr, doctorMgr,
+                                                 patientId);
+            break;
+        case 0:
+            LogService::logLogout("patient", patientId);
+            Session::getInstance()->logout();
+            return;
         }
     }
 }
 
 // ==================== 医生入口菜单 ====================
 
-void showDoctorMenu(AppointmentManager& appointmentMgr,
-                    MedicalRecordManager& recordMgr,
-                    PrescriptionManager& prescriptionMgr,
-                    DrugManager& drugMgr,
-                    DepartmentManager& deptMgr,
-                    ShortageManager& shortageMgr,
+void showDoctorMenu(AppointmentManager& appointmentMgr, MedicalRecordManager& recordMgr,
+                    PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                    DepartmentManager& deptMgr, ShortageManager& shortageMgr,
                     DoctorManager& doctorMgr,
                     BedManager& /*bedMgr*/) {  // 预留：医生菜单暂不使用床位管理
     string doctorId = Session::getInstance()->getUserId();
@@ -464,43 +572,49 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
 
         int choice = getValidChoice(0, 6);
         switch (choice) {
+        case 1:
+            ConsultationService::showWaitingList(appointmentMgr, doctorId);
+            break;
+        case 2:
+            ConsultationService::consultPatient(appointmentMgr, recordMgr, prescriptionMgr, drugMgr,
+                                                deptMgr, doctorId);
+            break;
+        case 3:
+            recordMgr.listByDoctor(doctorId);
+            break;
+        case 4:
+            prescriptionMgr.listByDoctor(doctorId);
+            break;
+        case 5: {
+            cout << "\n--- 缺药登记 ---\n";
+            cout << "1. 查看待办缺药清单\n";
+            cout << "2. 主动报告库存不足\n";
+            cout << "0. 返回\n";
+            int sub = getValidChoice(0, 2);
+            switch (sub) {
             case 1:
-                ConsultationService::showWaitingList(appointmentMgr, doctorId);
+                ShortageService::viewPendingShortages(shortageMgr);
                 break;
             case 2:
-                ConsultationService::consultPatient(appointmentMgr, recordMgr,
-                    prescriptionMgr, drugMgr, deptMgr, doctorId);
-                break;
-            case 3:
-                recordMgr.listByDoctor(doctorId);
-                break;
-            case 4:
-                prescriptionMgr.listByDoctor(doctorId);
-                break;
-            case 5: {
-                cout << "\n--- 缺药登记 ---\n";
-                cout << "1. 查看待办缺药清单\n";
-                cout << "2. 主动报告库存不足\n";
-                cout << "0. 返回\n";
-                int sub = getValidChoice(0, 2);
-                switch (sub) {
-                    case 1: ShortageService::viewPendingShortages(shortageMgr); break;
-                    case 2: ShortageService::reportShortage(drugMgr, shortageMgr); break;
-                }
+                ShortageService::reportShortage(drugMgr, shortageMgr);
                 break;
             }
-            case 6: {
-                cout << "请输入原密码：";
-                string oldPwd; inputLine(oldPwd);
-                cout << "请输入新密码：";
-                string newPwd; inputLine(newPwd);
-                doctorMgr.changePassword(doctorId, oldPwd, newPwd);
-                break;
-            }
-            case 0:
-                LogService::logLogout("doctor", doctorId);
-                Session::getInstance()->logout();
-                return;
+            break;
+        }
+        case 6: {
+            cout << "请输入原密码：";
+            string oldPwd;
+            inputLine(oldPwd);
+            cout << "请输入新密码：";
+            string newPwd;
+            inputLine(newPwd);
+            doctorMgr.changePassword(doctorId, oldPwd, newPwd);
+            break;
+        }
+        case 0:
+            LogService::logLogout("doctor", doctorId);
+            Session::getInstance()->logout();
+            return;
         }
     }
 }
@@ -510,20 +624,22 @@ void showDoctorMenu(AppointmentManager& appointmentMgr,
 void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMgr,
                       PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
                       ShortageManager& shortageMgr, AppointmentManager& appointmentMgr,
-                      DoctorManager& doctorMgr, DepartmentManager& deptMgr,
-                      BedManager& bedMgr) {
+                      DoctorManager& doctorMgr, DepartmentManager& deptMgr, BedManager& bedMgr) {
     cout << "\n--- 患者登录 ---\n";
     cout << "患者ID：";
-    string id; inputLine(id);
+    string id;
+    inputLine(id);
     cout << "密码：";
-    string pin; inputLine(pin);
+    string pin;
+    inputLine(pin);
 
     if (AuthService::loginPatient(patientMgr, id, pin)) {
         Patient* p = patientMgr.findPatient(id);
         Session::getInstance()->login("patient", id, p ? p->name : "");
         LogService::logLogin("patient", id, true);
         // 若发生了明文→哈希迁移，持久化写入
-        if (patientMgr.dirty) patientMgr.save();
+        if (patientMgr.dirty)
+            patientMgr.save();
         cout << "登录成功！\n";
         showPatientMenu(patientMgr, recordMgr, prescriptionMgr, drugMgr, shortageMgr,
                         appointmentMgr, doctorMgr, deptMgr, bedMgr);
@@ -535,13 +651,15 @@ void patientLoginFlow(PatientManager& patientMgr, MedicalRecordManager& recordMg
 
 void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMgr,
                      MedicalRecordManager& recordMgr, PrescriptionManager& prescriptionMgr,
-                     DrugManager& drugMgr, DepartmentManager& deptMgr,
-                     ShortageManager& shortageMgr, BedManager& bedMgr) {
+                     DrugManager& drugMgr, DepartmentManager& deptMgr, ShortageManager& shortageMgr,
+                     BedManager& bedMgr) {
     cout << "\n--- 医生登录 ---\n";
     cout << "账号：";
-    string account; inputLine(account);
+    string account;
+    inputLine(account);
     cout << "密码：";
-    string password; inputLine(password);
+    string password;
+    inputLine(password);
 
     if (AuthService::loginDoctor(doctorMgr, account, password)) {
         // 找到医生ID
@@ -557,9 +675,11 @@ void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMg
         Session::getInstance()->login("doctor", doctorId, doctorName);
         LogService::logLogin("doctor", account, true);
         // 若发生了明文→哈希迁移，持久化写入
-        if (doctorMgr.dirty) doctorMgr.save();
+        if (doctorMgr.dirty)
+            doctorMgr.save();
         cout << "登录成功！\n";
-        showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr, shortageMgr, doctorMgr, bedMgr);
+        showDoctorMenu(appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr, shortageMgr,
+                       doctorMgr, bedMgr);
     } else {
         LogService::logLogin("doctor", account, false);
         cout << "登录失败！账号或密码错误。\n";
@@ -567,13 +687,15 @@ void doctorLoginFlow(DoctorManager& doctorMgr, AppointmentManager& appointmentMg
 }
 
 void adminLoginFlow(PatientManager& patientMgr, DoctorManager& doctorMgr,
-                    DepartmentManager& deptMgr, DrugManager& drugMgr,
-                    BedManager& bedMgr, ShortageManager& shortageMgr) {
+                    DepartmentManager& deptMgr, DrugManager& drugMgr, BedManager& bedMgr,
+                    ShortageManager& shortageMgr) {
     cout << "\n--- 管理员登录 ---\n";
     cout << "账号：";
-    string user; inputLine(user);
+    string user;
+    inputLine(user);
     cout << "密码：";
-    string pwd; inputLine(pwd);
+    string pwd;
+    inputLine(pwd);
 
     if (AuthService::loginAdmin(user, pwd)) {
         Session::getInstance()->login("admin", user, "管理员");
@@ -624,18 +746,19 @@ int main() {
 
         int choice = getValidChoice(0, 3);
         switch (choice) {
-            case 1:
-                patientLoginFlow(patientMgr, recordMgr, prescriptionMgr, drugMgr,
-                                   shortageMgr, appointmentMgr, doctorMgr, deptMgr, bedMgr);
-                break;
-            case 2:
-                doctorLoginFlow(doctorMgr, appointmentMgr, recordMgr, prescriptionMgr,
-                                 drugMgr, deptMgr, shortageMgr, bedMgr);
-                break;
-            case 3:
-                adminLoginFlow(patientMgr, doctorMgr, deptMgr, drugMgr, bedMgr, shortageMgr);
-                break;
-            case 0: return 0;
+        case 1:
+            patientLoginFlow(patientMgr, recordMgr, prescriptionMgr, drugMgr, shortageMgr,
+                             appointmentMgr, doctorMgr, deptMgr, bedMgr);
+            break;
+        case 2:
+            doctorLoginFlow(doctorMgr, appointmentMgr, recordMgr, prescriptionMgr, drugMgr, deptMgr,
+                            shortageMgr, bedMgr);
+            break;
+        case 3:
+            adminLoginFlow(patientMgr, doctorMgr, deptMgr, drugMgr, bedMgr, shortageMgr);
+            break;
+        case 0:
+            return 0;
         }
     }
 }

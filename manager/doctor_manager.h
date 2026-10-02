@@ -23,10 +23,8 @@ public:
     // 修改密码
     bool changePassword(const string& id, const string& old_pwd, const string& new_pwd);
 
-    DoctorManager() : DataManager(FILE_DOCTOR){}
+    DoctorManager() : DataManager(FILE_DOCTOR) {}
 
     // 生成唯一ID: 前缀+自增序号，例 D1, D2, D3...
-    string generateId() {
-        return string(1, ID_DOCTOR) + to_string(next_id++);
-    }
+    string generateId() { return string(1, ID_DOCTOR) + to_string(next_id++); }
 };

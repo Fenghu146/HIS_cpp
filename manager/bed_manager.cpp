@@ -9,7 +9,8 @@ int BedManager::next_id = 1;
 void BedManager::load() {
     // 打开文件读取流，filename 来自基类 DataManager
     ifstream in(filename);
-    if (!in.is_open()) return; // 文件不存在或无法打开时直接返回，不报错
+    if (!in.is_open())
+        return;  // 文件不存在或无法打开时直接返回，不报错
 
     string line;
     // 按行读取文件，每一行对应一个 Bed 记录
@@ -21,12 +22,14 @@ void BedManager::load() {
         // 创建一个 Bed 对象，并用 unique_ptr 管理它的内存
         // make_unique 会返回一个 std::unique_ptr<Bed>，避免你手动写 new/delete
         auto b = make_unique<Bed>();
-        // 按照约定的字段顺序读取数据：id | bed_number | dept_id | type | daily_price | status | patient_id
+        // 按照约定的字段顺序读取数据：id | bed_number | dept_id | type | daily_price | status |
+        // patient_id
         getline(ss, b->id, '|');
         getline(ss, b->bed_number, '|');
         getline(ss, b->dept_id, '|');
         getline(ss, b->type, '|');
-        getline(ss, field, '|'); b->daily_price = stoi(field); // 字符串转整数
+        getline(ss, field, '|');
+        b->daily_price = stoi(field);  // 字符串转整数
         getline(ss, b->status, '|');
         getline(ss, b->patient_id, '|');
 
@@ -35,7 +38,7 @@ void BedManager::load() {
         // 因为 unique_ptr 不能复制，只能移动
         list.push_back(std::move(b));
     }
-    in.close(); // 读取完毕后关闭文件
+    in.close();  // 读取完毕后关闭文件
 
     // 读取完成后，更新 next_id，保证生成的新床位 ID 不会与已有 ID 冲突
     for (auto& b : list) {
@@ -44,7 +47,8 @@ void BedManager::load() {
             // 取出数字部分，例如 B12 -> 12
             int num = stoi(b->id.substr(1));
             // 如果已有编号比 next_id 大，就把 next_id 设为它的下一个值
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
@@ -52,19 +56,20 @@ void BedManager::load() {
 void BedManager::save() {
     // 打开文件写入流，注意这里会覆盖原文件内容
     ofstream out(filename);
-    if (!out.is_open()) return; // 如果打开失败则不继续写入
+    if (!out.is_open())
+        return;  // 如果打开失败则不继续写入
 
     // 遍历内存中的床位列表，把每个床位写成一行文本
     for (auto& b : list) {
-        out << b->id << '|'              // 床位 ID
-            << b->bed_number << '|'      // 床号
-            << b->dept_id << '|'         // 科室 ID
-            << b->type << '|'            // 床位类型
-            << b->daily_price << '|'     // 每日价格
-            << b->status << '|'          // 当前状态
-            << b->patient_id << '\n';   // 患者 ID，最后以换行结束
+        out << b->id << '|'            // 床位 ID
+            << b->bed_number << '|'    // 床号
+            << b->dept_id << '|'       // 科室 ID
+            << b->type << '|'          // 床位类型
+            << b->daily_price << '|'   // 每日价格
+            << b->status << '|'        // 当前状态
+            << b->patient_id << '\n';  // 患者 ID，最后以换行结束
     }
-    out.close(); // 写入完毕后关闭文件
+    out.close();  // 写入完毕后关闭文件
 }
 
 void BedManager::registerBed(DepartmentManager& deptMgr) {
@@ -101,9 +106,18 @@ void BedManager::registerBed(DepartmentManager& deptMgr) {
     cout << "请选择类型：";
     int typeChoice = getValidChoice(1, 3);
     switch (typeChoice) {
-        case 1: b->type = "普通"; b->daily_price = BED_FEE_NORMAL; break;
-        case 2: b->type = "急诊"; b->daily_price = BED_FEE_EMERGENCY; break;
-        case 3: b->type = "重症"; b->daily_price = BED_FEE_ICU; break;
+    case 1:
+        b->type = "普通";
+        b->daily_price = BED_FEE_NORMAL;
+        break;
+    case 2:
+        b->type = "急诊";
+        b->daily_price = BED_FEE_EMERGENCY;
+        break;
+    case 3:
+        b->type = "重症";
+        b->daily_price = BED_FEE_ICU;
+        break;
     }
 
     b->id = generateId();
@@ -122,7 +136,8 @@ Bed* BedManager::findBed(const string& id) {
 
 Bed* BedManager::findBedByNumber(const string& bed_number) {
     for (auto& b : list) {
-        if (b->bed_number == bed_number) return b.get();
+        if (b->bed_number == bed_number)
+            return b.get();
     }
     return nullptr;
 }
@@ -138,7 +153,8 @@ bool BedManager::deleteBed(const string& id) {
         return false;
     }
     bool ok = removeById(list, id);
-    if (ok) save();
+    if (ok)
+        save();
     return ok;
 }
 
@@ -160,7 +176,8 @@ void BedManager::listBedByDept(const string& dept_id) {
             found = true;
         }
     }
-    if (!found) cout << "该科室暂无床位。\n";
+    if (!found)
+        cout << "该科室暂无床位。\n";
 }
 
 bool BedManager::changeStatus(const string& id, const string& new_status) {
@@ -205,7 +222,8 @@ bool BedManager::releaseBed(const string& id) {
 int BedManager::countBedsByDept(const string& dept_id) const {
     int count = 0;
     for (auto& b : list) {
-        if (b->dept_id == dept_id) count++;
+        if (b->dept_id == dept_id)
+            count++;
     }
     return count;
 }
@@ -213,7 +231,8 @@ int BedManager::countBedsByDept(const string& dept_id) const {
 int BedManager::countAvailableBedsByDept(const string& dept_id) const {
     int count = 0;
     for (auto& b : list) {
-        if (b->dept_id == dept_id && b->status == BedStatus::FREE) count++;
+        if (b->dept_id == dept_id && b->status == BedStatus::FREE)
+            count++;
     }
     return count;
 }

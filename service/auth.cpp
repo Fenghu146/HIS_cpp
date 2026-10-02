@@ -4,7 +4,8 @@
 
 bool AuthService::loginPatient(PatientManager& mgr, const string& id, const string& pin) {
     Patient* p = mgr.findPatient(id);
-    if (!p) return false;
+    if (!p)
+        return false;
 
     bool valid;
     if (!p->pin_hash.empty()) {
@@ -28,7 +29,8 @@ bool AuthService::loginDoctor(DoctorManager& mgr, const string& account, const s
             break;
         }
     }
-    if (!d) return false;
+    if (!d)
+        return false;
 
     bool valid;
     if (!d->password_hash.empty()) {

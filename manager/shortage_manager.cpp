@@ -7,7 +7,8 @@ int ShortageManager::next_id = 1;
 
 void ShortageManager::load() {
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -18,8 +19,10 @@ void ShortageManager::load() {
         getline(ss, s->id, '|');
         getline(ss, s->drug_id, '|');
         getline(ss, s->drug_name, '|');
-        getline(ss, field, '|'); s->required_amount = stoi(field);
-        getline(ss, field, '|'); s->current_stock = stoi(field);
+        getline(ss, field, '|');
+        s->required_amount = stoi(field);
+        getline(ss, field, '|');
+        s->current_stock = stoi(field);
         getline(ss, s->prescription_id, '|');
         getline(ss, s->triggered_by, '|');
         getline(ss, field, '|');
@@ -34,32 +37,28 @@ void ShortageManager::load() {
     for (auto& s : list) {
         if (s->id.length() > 1 && s->id[0] == ID_SHORTAGE) {
             int num = stoi(s->id.substr(1));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
 
 void ShortageManager::save() {
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& s : list) {
-        out << s->id << '|'
-            << s->drug_id << '|'
-            << s->drug_name << '|'
-            << s->required_amount << '|'
-            << s->current_stock << '|'
-            << s->prescription_id << '|'
-            << s->triggered_by << '|'
-            << (s->urgency == ShortageUrgency::URGENT ? "紧急" : "普通") << '|'
-            << s->status << '|'
+        out << s->id << '|' << s->drug_id << '|' << s->drug_name << '|' << s->required_amount << '|'
+            << s->current_stock << '|' << s->prescription_id << '|' << s->triggered_by << '|'
+            << (s->urgency == ShortageUrgency::URGENT ? "紧急" : "普通") << '|' << s->status << '|'
             << s->create_time << '\n';
     }
     out.close();
 }
 
-Shortage* ShortageManager::addShortage(const string& drug_id, const string& drug_name,
-                                       int required, int stock, const string& prescription_id,
+Shortage* ShortageManager::addShortage(const string& drug_id, const string& drug_name, int required,
+                                       int stock, const string& prescription_id,
                                        const string& triggered_by, ShortageUrgency urgency) {
     auto s = make_unique<Shortage>();
     s->id = generateId();
@@ -97,7 +96,8 @@ void ShortageManager::listByStatus(const string& status) {
             found = true;
         }
     }
-    if (!found) cout << "暂无状态为「" << status << "」的缺药记录。\n";
+    if (!found)
+        cout << "暂无状态为「" << status << "」的缺药记录。\n";
 }
 
 void ShortageManager::listPending() {
@@ -149,9 +149,11 @@ bool ShortageManager::hasPendingForDrug(const string& drug_id) {
 }
 
 ShortageUrgency ShortageManager::calcUrgency(int required, int stock) {
-    if (stock <= 0) return ShortageUrgency::URGENT;
+    if (stock <= 0)
+        return ShortageUrgency::URGENT;
     // 缺口超过当前库存的一半 → 紧急
-    if (required > stock && (required - stock) > stock / 2) return ShortageUrgency::URGENT;
+    if (required > stock && (required - stock) > stock / 2)
+        return ShortageUrgency::URGENT;
     return ShortageUrgency::NORMAL;
 }
 

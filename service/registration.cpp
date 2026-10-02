@@ -18,8 +18,8 @@ string RegistrationService::selectDoctor(DoctorManager& doctorMgr, const string&
 
     cout << "可选医生：\n";
     for (size_t i = 0; i < deptDoctors.size(); i++) {
-        cout << "  " << (i + 1) << ". " << deptDoctors[i]->name
-             << " (" << deptDoctors[i]->id << ") "
+        cout << "  " << (i + 1) << ". " << deptDoctors[i]->name << " (" << deptDoctors[i]->id
+             << ") "
              << "擅长：" << deptDoctors[i]->specialty << endl;
     }
     cout << "请选择医生序号：";
@@ -27,12 +27,9 @@ string RegistrationService::selectDoctor(DoctorManager& doctorMgr, const string&
     return deptDoctors[idx - 1]->id;
 }
 
-bool RegistrationService::registerPatient(
-    PatientManager& patientMgr,
-    DoctorManager& doctorMgr,
-    DepartmentManager& deptMgr,
-    AppointmentManager& appointmentMgr
-) {
+bool RegistrationService::registerPatient(PatientManager& patientMgr, DoctorManager& doctorMgr,
+                                          DepartmentManager& deptMgr,
+                                          AppointmentManager& appointmentMgr) {
     // 1. 输入患者ID
     cout << "请输入患者ID：";
     string patientId;
@@ -61,15 +58,16 @@ bool RegistrationService::registerPatient(
 
     // 3. 选择医生
     string doctorId = selectDoctor(doctorMgr, deptName);
-    if (doctorId.empty()) return false;
+    if (doctorId.empty())
+        return false;
     Doctor* d = doctorMgr.findDoctor(doctorId);
     cout << "已选择医生：" << d->name << endl;
 
     // 4. 确认挂号费
     cout << "挂号费：" << REGISTRATION_FEE << " 分" << endl;
     if (p->balance < REGISTRATION_FEE) {
-        cout << "[错误] 余额不足！当前余额 " << p->balance
-             << " 分，需要 " << REGISTRATION_FEE << " 分。\n";
+        cout << "[错误] 余额不足！当前余额 " << p->balance << " 分，需要 " << REGISTRATION_FEE
+             << " 分。\n";
         cout << "请先充值后再挂号。\n";
         return false;
     }

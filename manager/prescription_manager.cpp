@@ -13,7 +13,8 @@ int PrescriptionItemManager::next_id = 1;
 
 void PrescriptionItemManager::load() {
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -24,9 +25,11 @@ void PrescriptionItemManager::load() {
         getline(ss, item->id, '|');
         getline(ss, item->prescription_id, '|');
         getline(ss, item->drug_id, '|');
-        getline(ss, field, '|'); item->quantity = stoi(field);
+        getline(ss, field, '|');
+        item->quantity = stoi(field);
         getline(ss, item->usage, '|');
-        getline(ss, field, '|'); item->amount = stoi(field);
+        getline(ss, field, '|');
+        item->amount = stoi(field);
 
         list.push_back(std::move(item));
     }
@@ -37,28 +40,27 @@ void PrescriptionItemManager::load() {
     for (auto& item : list) {
         if (item->id.starts_with(ID_PREFIX_PRESCRIPTION_ITEM)) {
             int num = stoi(item->id.substr(strlen(ID_PREFIX_PRESCRIPTION_ITEM)));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
 
 void PrescriptionItemManager::save() {
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& item : list) {
-        out << item->id << '|'
-            << item->prescription_id << '|'
-            << item->drug_id << '|'
-            << item->quantity << '|'
-            << item->usage << '|'
-            << item->amount << '\n';
+        out << item->id << '|' << item->prescription_id << '|' << item->drug_id << '|'
+            << item->quantity << '|' << item->usage << '|' << item->amount << '\n';
     }
     out.close();
 }
 
 PrescriptionItem* PrescriptionItemManager::addItem(const string& prescription_id,
-    const string& drug_id, int quantity, const string& usage, int amount) {
+                                                   const string& drug_id, int quantity,
+                                                   const string& usage, int amount) {
     auto item = make_unique<PrescriptionItem>();
     item->id = generateId();
     item->prescription_id = prescription_id;
@@ -73,7 +75,8 @@ PrescriptionItem* PrescriptionItemManager::addItem(const string& prescription_id
     return raw;
 }
 
-const vector<PrescriptionItem*>& PrescriptionItemManager::getItemsByRxId(const string& prescription_id) const {
+const vector<PrescriptionItem*>& PrescriptionItemManager::getItemsByRxId(
+    const string& prescription_id) const {
     static const vector<PrescriptionItem*> empty;
     auto it = by_prescription.find(prescription_id);
     return (it != by_prescription.end()) ? it->second : empty;
@@ -94,7 +97,8 @@ void PrescriptionItemManager::listByPrescription(const string& prescription_id) 
             found = true;
         }
     }
-    if (!found) cout << "该处方暂无明细。\n";
+    if (!found)
+        cout << "该处方暂无明细。\n";
 }
 
 void PrescriptionItemManager::listAll() {
@@ -112,7 +116,8 @@ void PrescriptionItemManager::listAll() {
 void PrescriptionManager::load() {
     // 加载处方主表
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -124,7 +129,8 @@ void PrescriptionManager::load() {
         getline(ss, p->record_id, '|');
         getline(ss, p->patient_id, '|');
         getline(ss, p->doctor_id, '|');
-        getline(ss, field, '|'); p->total_amount = stoi(field);
+        getline(ss, field, '|');
+        p->total_amount = stoi(field);
         getline(ss, p->status, '|');
         getline(ss, p->create_time, '|');
 
@@ -135,7 +141,8 @@ void PrescriptionManager::load() {
     for (auto& p : list) {
         if (p->id.starts_with(ID_PREFIX_PRESCRIPTION)) {
             int num = stoi(p->id.substr(strlen(ID_PREFIX_PRESCRIPTION)));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 
@@ -146,16 +153,12 @@ void PrescriptionManager::load() {
 void PrescriptionManager::save() {
     // 保存处方主表
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& p : list) {
-        out << p->id << '|'
-            << p->record_id << '|'
-            << p->patient_id << '|'
-            << p->doctor_id << '|'
-            << p->total_amount << '|'
-            << p->status << '|'
-            << p->create_time << '\n';
+        out << p->id << '|' << p->record_id << '|' << p->patient_id << '|' << p->doctor_id << '|'
+            << p->total_amount << '|' << p->status << '|' << p->create_time << '\n';
     }
     out.close();
 
@@ -185,7 +188,8 @@ void PrescriptionManager::listByPatient(const string& patient_id) {
             found = true;
         }
     }
-    if (!found) cout << "该患者暂无处方记录。\n";
+    if (!found)
+        cout << "该患者暂无处方记录。\n";
 }
 
 void PrescriptionManager::listByDoctor(const string& doctor_id) {
@@ -196,7 +200,8 @@ void PrescriptionManager::listByDoctor(const string& doctor_id) {
             found = true;
         }
     }
-    if (!found) cout << "该医生暂无处方记录。\n";
+    if (!found)
+        cout << "该医生暂无处方记录。\n";
 }
 
 void PrescriptionManager::listByStatus(const string& status) {
@@ -207,7 +212,8 @@ void PrescriptionManager::listByStatus(const string& status) {
             found = true;
         }
     }
-    if (!found) cout << "暂无状态为「" << status << "」的处方记录。\n";
+    if (!found)
+        cout << "暂无状态为「" << status << "」的处方记录。\n";
 }
 
 bool PrescriptionManager::updateStatus(const string& id, const string& new_status) {
@@ -222,7 +228,9 @@ bool PrescriptionManager::updateStatus(const string& id, const string& new_statu
 }
 
 Prescription* PrescriptionManager::addPrescription(const string& record_id,
-    const string& patient_id, const string& doctor_id, const vector<ItemInput>& items) {
+                                                   const string& patient_id,
+                                                   const string& doctor_id,
+                                                   const vector<ItemInput>& items) {
     auto p = make_unique<Prescription>();
     p->id = generateId();
     p->record_id = record_id;
@@ -260,9 +268,7 @@ void PrescriptionManager::displayPrescription(const string& prescription_id, Dru
     for (auto* item : itemMgr.getItemsByRxId(prescription_id)) {
         Drug* d = drugMgr.findDrug(item->drug_id);
         string drugName = d ? d->general_name : item->drug_id;
-        cout << "    药品：" << drugName
-             << " | 数量：" << item->quantity
-             << " | 用法：" << item->usage
-             << " | 金额：" << item->amount << "分" << endl;
+        cout << "    药品：" << drugName << " | 数量：" << item->quantity << " | 用法："
+             << item->usage << " | 金额：" << item->amount << "分" << endl;
     }
 }

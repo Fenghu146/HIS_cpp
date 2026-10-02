@@ -16,18 +16,14 @@ public:
     string id_card;
     long long balance = 0;
     string pin;
-    string pin_hash;       // SHA256 哈希，空串表示未迁移
+    string pin_hash;  // SHA256 哈希，空串表示未迁移
     float insurance_rate = 0.0f;
 
     Patient() = default;
 
     friend ostream& operator<<(ostream& os, const Patient& p) {
-        os << "ID:" << p.id
-           << "| 姓名:" << p.name
-           << "| 年龄:" << p.age
-           << "| 性别:" << p.gender
-           << "| 余额:" << p.balance
-           << "| 医保比例:" << (p.insurance_rate * 100) << "%";
+        os << "ID:" << p.id << "| 姓名:" << p.name << "| 年龄:" << p.age << "| 性别:" << p.gender
+           << "| 余额:" << p.balance << "| 医保比例:" << (p.insurance_rate * 100) << "%";
         return os;
     }
 };
@@ -45,11 +41,8 @@ public:
     Doctor() = default;
 
     friend ostream& operator<<(ostream& os, const Doctor& d) {
-        os << "ID:" << d.id
-           << "|姓名:" << d.name
-           << "|账号:" << d.account
-           << "|科室:" << d.dept_name
-           << "|擅长领域:" << d.specialty;
+        os << "ID:" << d.id << "|姓名:" << d.name << "|账号:" << d.account
+           << "|科室:" << d.dept_name << "|擅长领域:" << d.specialty;
         return os;
     }
 };
@@ -66,12 +59,8 @@ public:
     Department() = default;
 
     friend ostream& operator<<(ostream& os, const Department& d) {
-        os << "ID:" << d.id
-           << "|科室:" << d.name
-           << "|负责人:" << d.director_name
-           << "|位置:" << d.location
-           << "|医生数:" << d.doctor_count
-           << "|简介:" << d.description;
+        os << "ID:" << d.id << "|科室:" << d.name << "|负责人:" << d.director_name
+           << "|位置:" << d.location << "|医生数:" << d.doctor_count << "|简介:" << d.description;
         return os;
     }
 };
@@ -85,19 +74,16 @@ public:
     float price = 0.0f;
     int stock = 0;
     int warning_stock = 0;
-    string dept_ids;        // 科室ID，逗号分隔；空串表示通用药品
-    int max_stock = 0;      // 最大库存，用于预留自动计算预警阈值接口
+    string dept_ids;    // 科室ID，逗号分隔；空串表示通用药品
+    int max_stock = 0;  // 最大库存，用于预留自动计算预警阈值接口
 
-    Drug() = default; //默认构造函数
+    Drug() = default;  // 默认构造函数
 
     friend ostream& operator<<(ostream& os, const Drug& d) {
-        os << "ID: " << d.id
-           << " | 通用名: " << d.general_name
+        os << "ID: " << d.id << " | 通用名: " << d.general_name
            << " | 商品名: " << (d.trade_name.empty() ? "-" : d.trade_name)
-           << " | 别名: " << (d.alias.empty() ? "-" : d.alias)
-           << " | 单价: " << d.price
-           << " | 库存: " << d.stock
-           << " | 阈值: " << d.warning_stock
+           << " | 别名: " << (d.alias.empty() ? "-" : d.alias) << " | 单价: " << d.price
+           << " | 库存: " << d.stock << " | 阈值: " << d.warning_stock
            << " | 科室ID: " << (d.dept_ids.empty() ? "通用" : d.dept_ids);
         return os;
     }
@@ -106,23 +92,19 @@ public:
 // 床位
 class Bed {
 public:
-    string id;              // B1, B2, ...
-    string bed_number;      // 床号，如 "A-101"
-    string dept_id;         // 所属科室ID
-    string type;            // 普通/急诊/重症
-    int daily_price = 0;    // 每日费用（分）
-    string status;          // 空闲/占用/清洁中
-    string patient_id;      // 当前占用患者ID（空=空闲）
+    string id;            // B1, B2, ...
+    string bed_number;    // 床号，如 "A-101"
+    string dept_id;       // 所属科室ID
+    string type;          // 普通/急诊/重症
+    int daily_price = 0;  // 每日费用（分）
+    string status;        // 空闲/占用/清洁中
+    string patient_id;    // 当前占用患者ID（空=空闲）
 
     Bed() = default;
 
     friend ostream& operator<<(ostream& os, const Bed& b) {
-        os << "ID:" << b.id
-           << "| 床号:" << b.bed_number
-           << "| 科室ID:" << b.dept_id
-           << "| 类型:" << b.type
-           << "| 日费:" << b.daily_price
-           << "| 状态:" << b.status
+        os << "ID:" << b.id << "| 床号:" << b.bed_number << "| 科室ID:" << b.dept_id
+           << "| 类型:" << b.type << "| 日费:" << b.daily_price << "| 状态:" << b.status
            << "| 患者:" << (b.patient_id.empty() ? "-" : b.patient_id);
         return os;
     }
@@ -131,23 +113,19 @@ public:
 // 挂号单
 class Appointment {
 public:
-    string id;              // A1, A2, ...
+    string id;  // A1, A2, ...
     string patient_id;
     string doctor_id;
     string dept_id;
-    int fee = 0;            // 挂号费（分）
-    string status;          // 待诊/已接诊/已完成/已取消
+    int fee = 0;    // 挂号费（分）
+    string status;  // 待诊/已接诊/已完成/已取消
     string create_time;
 
     Appointment() = default;
 
     friend ostream& operator<<(ostream& os, const Appointment& a) {
-        os << "ID:" << a.id
-           << "| 患者:" << a.patient_id
-           << "| 医生:" << a.doctor_id
-           << "| 科室:" << a.dept_id
-           << "| 费用:" << a.fee
-           << "| 状态:" << a.status
+        os << "ID:" << a.id << "| 患者:" << a.patient_id << "| 医生:" << a.doctor_id
+           << "| 科室:" << a.dept_id << "| 费用:" << a.fee << "| 状态:" << a.status
            << "| 时间:" << a.create_time;
         return os;
     }
@@ -160,23 +138,18 @@ public:
     string appointment_id;  // 关联挂号单
     string patient_id;
     string doctor_id;
-    string complaint;       // 主诉
-    string diagnosis;       // 诊断
-    string orders;          // 医嘱
+    string complaint;  // 主诉
+    string diagnosis;  // 诊断
+    string orders;     // 医嘱
     string create_time;
     bool need_hospitalize = false;  // 是否建议住院
 
     MedicalRecord() = default;
 
     friend ostream& operator<<(ostream& os, const MedicalRecord& r) {
-        os << "ID:" << r.id
-           << "| 挂号:" << r.appointment_id
-           << "| 患者:" << r.patient_id
-           << "| 医生:" << r.doctor_id
-           << "| 主诉:" << r.complaint
-           << "| 诊断:" << r.diagnosis
-           << "| 医嘱:" << r.orders
-           << "| 时间:" << r.create_time
+        os << "ID:" << r.id << "| 挂号:" << r.appointment_id << "| 患者:" << r.patient_id
+           << "| 医生:" << r.doctor_id << "| 主诉:" << r.complaint << "| 诊断:" << r.diagnosis
+           << "| 医嘱:" << r.orders << "| 时间:" << r.create_time
            << "| 建议住院:" << (r.need_hospitalize ? "是" : "否");
         return os;
     }
@@ -185,23 +158,19 @@ public:
 // 处方
 class Prescription {
 public:
-    string id;              // RX1, RX2, ...
-    string record_id;       // 关联病历
+    string id;         // RX1, RX2, ...
+    string record_id;  // 关联病历
     string patient_id;
     string doctor_id;
-    int total_amount = 0;   // 总金额（分）
-    string status;          // 未缴费/已缴费/已取药
+    int total_amount = 0;  // 总金额（分）
+    string status;         // 未缴费/已缴费/已取药
     string create_time;
 
     Prescription() = default;
 
     friend ostream& operator<<(ostream& os, const Prescription& p) {
-        os << "ID:" << p.id
-           << "| 病历:" << p.record_id
-           << "| 患者:" << p.patient_id
-           << "| 医生:" << p.doctor_id
-           << "| 总金额:" << p.total_amount
-           << "| 状态:" << p.status
+        os << "ID:" << p.id << "| 病历:" << p.record_id << "| 患者:" << p.patient_id
+           << "| 医生:" << p.doctor_id << "| 总金额:" << p.total_amount << "| 状态:" << p.status
            << "| 时间:" << p.create_time;
         return os;
     }
@@ -210,27 +179,25 @@ public:
 // 处方明细
 class PrescriptionItem {
 public:
-    string id;              // PI1, PI2, ...
+    string id;  // PI1, PI2, ...
     string prescription_id;
     string drug_id;
     int quantity = 0;
-    string usage;           // 用法用量
-    int amount = 0;         // 该项金额（分）
+    string usage;    // 用法用量
+    int amount = 0;  // 该项金额（分）
 
     PrescriptionItem() = default;
 
     friend ostream& operator<<(ostream& os, const PrescriptionItem& item) {
-        os << "  明细ID:" << item.id
-           << "| 处方:" << item.prescription_id
-           << "| 药品:" << item.drug_id
-           << "| 数量:" << item.quantity
-           << "| 用法:" << item.usage
+        os << "  明细ID:" << item.id << "| 处方:" << item.prescription_id
+           << "| 药品:" << item.drug_id << "| 数量:" << item.quantity << "| 用法:" << item.usage
            << "| 金额:" << item.amount << "分";
         return os;
     }
 };
 
-using PatientList = vector<unique_ptr<Patient>>; //类型别名，表示患者列表，使用 unique_ptr 管理内存
+using PatientList = vector<unique_ptr<Patient>>;  // 类型别名，表示患者列表，使用 unique_ptr
+                                                  // 管理内存
 using DoctorList = vector<unique_ptr<Doctor>>;
 using DepartmentList = vector<unique_ptr<Department>>;
 using DrugList = vector<unique_ptr<Drug>>;

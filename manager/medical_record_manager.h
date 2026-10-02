@@ -16,13 +16,10 @@ public:
     void listByDoctor(const string& doctor_id);
     void listByAppointment(const string& appointment_id);
     MedicalRecord* addRecord(const string& appointment_id, const string& patient_id,
-                              const string& doctor_id, const string& complaint,
-                              const string& diagnosis, const string& orders,
-                              bool need_hospitalize);
+                             const string& doctor_id, const string& complaint,
+                             const string& diagnosis, const string& orders, bool need_hospitalize);
 
-    MedicalRecordManager() : DataManager(FILE_RECORD){}
+    MedicalRecordManager() : DataManager(FILE_RECORD) {}
 
-    string generateId() {
-        return string(ID_PREFIX_RECORD) + to_string(next_id++);
-    }
+    string generateId() { return string(ID_PREFIX_RECORD) + to_string(next_id++); }
 };

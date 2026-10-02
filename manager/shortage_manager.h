@@ -13,9 +13,9 @@ public:
     void save() override;
 
     // 添加缺药记录
-    Shortage* addShortage(const string& drug_id, const string& drug_name,
-                          int required, int stock, const string& prescription_id,
-                          const string& triggered_by, ShortageUrgency urgency);
+    Shortage* addShortage(const string& drug_id, const string& drug_name, int required, int stock,
+                          const string& prescription_id, const string& triggered_by,
+                          ShortageUrgency urgency);
 
     // 列出所有记录
     void listAll();
@@ -44,9 +44,7 @@ public:
 
     ShortageManager() : DataManager(FILE_SHORTAGE) {}
 
-    string generateId() {
-        return string(1, ID_SHORTAGE) + to_string(next_id++);
-    }
+    string generateId() { return string(1, ID_SHORTAGE) + to_string(next_id++); }
 
 private:
     // 按紧急度排序（紧急在前）

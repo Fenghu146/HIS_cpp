@@ -15,22 +15,13 @@ public:
     static void showWaitingList(AppointmentManager& appointmentMgr, const string& doctor_id);
 
     // 接诊（完整流程）
-    static bool consultPatient(
-        AppointmentManager& appointmentMgr,
-        MedicalRecordManager& recordMgr,
-        PrescriptionManager& prescriptionMgr,
-        DrugManager& drugMgr,
-        DepartmentManager& deptMgr,
-        const string& doctor_id
-    );
+    static bool consultPatient(AppointmentManager& appointmentMgr, MedicalRecordManager& recordMgr,
+                               PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                               DepartmentManager& deptMgr, const string& doctor_id);
 
 private:
     // 开处方子流程
-    static bool prescribe(
-        PrescriptionManager& prescriptionMgr,
-        DrugManager& drugMgr,
-        const string& record_id,
-        const string& patient_id,
-        const string& doctor_id
-    );
+    static bool prescribe(PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                          const string& record_id, const string& patient_id,
+                          const string& doctor_id);
 };

@@ -10,10 +10,7 @@ void ShortageService::viewPendingShortages(ShortageManager& shortageMgr) {
     shortageMgr.listPending();
 }
 
-void ShortageService::reportShortage(
-    DrugManager& drugMgr,
-    ShortageManager& shortageMgr) {
-
+void ShortageService::reportShortage(DrugManager& drugMgr, ShortageManager& shortageMgr) {
     if (drugMgr.list.empty()) {
         cout << "暂无药品记录。\n";
         return;
@@ -23,13 +20,14 @@ void ShortageService::reportShortage(
     cout << "\n=== 药品列表 ===\n";
     int idx = 1;
     for (auto& d : drugMgr.list) {
-        cout << "  " << idx++ << ". " << d->general_name
-             << " (" << d->id << ") 库存:" << d->stock << endl;
+        cout << "  " << idx++ << ". " << d->general_name << " (" << d->id << ") 库存:" << d->stock
+             << endl;
     }
     cout << "  0. 返回\n";
     cout << "请选择缺药药品序号：";
     int choice = getValidChoice(0, static_cast<int>(drugMgr.list.size()));
-    if (choice == 0) return;
+    if (choice == 0)
+        return;
 
     Drug* d = drugMgr.list[choice - 1].get();
 
@@ -37,11 +35,13 @@ void ShortageService::reportShortage(
     if (shortageMgr.hasPendingForDrug(d->id)) {
         cout << "[提示] 药品 " << d->general_name << " 已有待处理的缺药记录。\n";
         cout << "是否仍要追加报告？(y/n)：";
-        if (!getConfirm()) return;
+        if (!getConfirm())
+            return;
     }
 
     cout << "请输入需求数量：";
-    string qtyStr; inputLine(qtyStr);
+    string qtyStr;
+    inputLine(qtyStr);
     int qty = 0;
     if (!parseInt(qtyStr, qty) || qty <= 0) {
         cout << "[错误] 数量必须为正整数！\n";
@@ -51,20 +51,14 @@ void ShortageService::reportShortage(
     // 判定紧急度（统一由 ShortageManager 维护规则）
     ShortageUrgency urgency = ShortageManager::calcUrgency(qty, d->stock);
 
-    Shortage* s = shortageMgr.addShortage(
-        d->id, d->general_name, qty, d->stock,
-        "", ShortageSource::REPORT, urgency
-    );
+    Shortage* s = shortageMgr.addShortage(d->id, d->general_name, qty, d->stock, "",
+                                          ShortageSource::REPORT, urgency);
 
-    cout << "已登记缺药报告：" << s->id
-         << "（" << d->general_name << "，紧急度："
+    cout << "已登记缺药报告：" << s->id << "（" << d->general_name << "，紧急度："
          << (urgency == ShortageUrgency::URGENT ? "紧急" : "普通") << "）\n";
 }
 
-bool ShortageService::fulfillShortage(
-    ShortageManager& shortageMgr,
-    DrugManager& drugMgr) {
-
+bool ShortageService::fulfillShortage(ShortageManager& shortageMgr, DrugManager& drugMgr) {
     auto pending = shortageMgr.getPending();
     if (pending.empty()) {
         cout << "暂无待处理缺药记录。\n";
@@ -72,12 +66,11 @@ bool ShortageService::fulfillShortage(
     }
 
     // 按紧急度排序显示
-    sort(pending.begin(), pending.end(),
-         [](const Shortage* a, const Shortage* b) {
-             if (a->urgency != b->urgency)
-                 return a->urgency == ShortageUrgency::URGENT;
-             return a->id < b->id;
-         });
+    sort(pending.begin(), pending.end(), [](const Shortage* a, const Shortage* b) {
+        if (a->urgency != b->urgency)
+            return a->urgency == ShortageUrgency::URGENT;
+        return a->id < b->id;
+    });
 
     cout << "\n=== 待处理缺药记录 ===\n";
     for (size_t i = 0; i < pending.size(); i++) {
@@ -86,24 +79,27 @@ bool ShortageService::fulfillShortage(
     cout << "  0. 返回\n";
     cout << "请选择要处理的缺药记录序号：";
     int idx = getValidChoice(0, static_cast<int>(pending.size()));
-    if (idx == 0) return false;
+    if (idx == 0)
+        return false;
 
     Shortage* s = pending[idx - 1];
 
-    cout << "\n选中记录：" << s->drug_name << "（需 " << s->required_amount
-         << "，当前库存 " << s->current_stock << "）\n";
+    cout << "\n选中记录：" << s->drug_name << "（需 " << s->required_amount << "，当前库存 "
+         << s->current_stock << "）\n";
     cout << "处理方式：\n";
     cout << "  1. 已补货（同时入库）\n";
     cout << "  2. 已处理（换药等其他方式）\n";
     cout << "  0. 取消\n";
     cout << "请选择：";
     int action = getValidChoice(0, 2);
-    if (action == 0) return false;
+    if (action == 0)
+        return false;
 
     if (action == 1) {
         // 已补货，询问入库数量
         cout << "请输入补货数量（直接回车则按需求数量 " << s->required_amount << "）：";
-        string qtyStr; inputLine(qtyStr);
+        string qtyStr;
+        inputLine(qtyStr);
         int addQty = s->required_amount;
         if (!qtyStr.empty() && !parseInt(qtyStr, addQty)) {
             cout << "[提示] 补货数量非法，已按需求数量 " << s->required_amount << " 处理。\n";

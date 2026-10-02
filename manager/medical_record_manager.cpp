@@ -10,7 +10,8 @@ int MedicalRecordManager::next_id = 1;
 
 void MedicalRecordManager::load() {
     ifstream in(filename);
-    if (!in.is_open()) return;
+    if (!in.is_open())
+        return;
 
     string line;
     while (getline(in, line)) {
@@ -26,7 +27,8 @@ void MedicalRecordManager::load() {
         getline(ss, r->diagnosis, '|');
         getline(ss, r->orders, '|');
         getline(ss, r->create_time, '|');
-        getline(ss, field, '|'); r->need_hospitalize = (field == "1");
+        getline(ss, field, '|');
+        r->need_hospitalize = (field == "1");
 
         list.push_back(std::move(r));
     }
@@ -35,25 +37,21 @@ void MedicalRecordManager::load() {
     for (auto& r : list) {
         if (r->id.starts_with(ID_PREFIX_RECORD)) {
             int num = stoi(r->id.substr(strlen(ID_PREFIX_RECORD)));
-            if (num >= next_id) next_id = num + 1;
+            if (num >= next_id)
+                next_id = num + 1;
         }
     }
 }
 
 void MedicalRecordManager::save() {
     ofstream out(filename);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
 
     for (auto& r : list) {
-        out << r->id << '|'
-            << r->appointment_id << '|'
-            << r->patient_id << '|'
-            << r->doctor_id << '|'
-            << r->complaint << '|'
-            << r->diagnosis << '|'
-            << r->orders << '|'
-            << r->create_time << '|'
-            << (r->need_hospitalize ? "1" : "0") << '\n';
+        out << r->id << '|' << r->appointment_id << '|' << r->patient_id << '|' << r->doctor_id
+            << '|' << r->complaint << '|' << r->diagnosis << '|' << r->orders << '|'
+            << r->create_time << '|' << (r->need_hospitalize ? "1" : "0") << '\n';
     }
     out.close();
 }
@@ -80,7 +78,8 @@ void MedicalRecordManager::listByPatient(const string& patient_id) {
             found = true;
         }
     }
-    if (!found) cout << "该患者暂无病历记录。\n";
+    if (!found)
+        cout << "该患者暂无病历记录。\n";
 }
 
 void MedicalRecordManager::listByDoctor(const string& doctor_id) {
@@ -91,7 +90,8 @@ void MedicalRecordManager::listByDoctor(const string& doctor_id) {
             found = true;
         }
     }
-    if (!found) cout << "该医生暂无病历记录。\n";
+    if (!found)
+        cout << "该医生暂无病历记录。\n";
 }
 
 void MedicalRecordManager::listByAppointment(const string& appointment_id) {
@@ -102,12 +102,14 @@ void MedicalRecordManager::listByAppointment(const string& appointment_id) {
             found = true;
         }
     }
-    if (!found) cout << "该挂号单暂无病历记录。\n";
+    if (!found)
+        cout << "该挂号单暂无病历记录。\n";
 }
 
 MedicalRecord* MedicalRecordManager::addRecord(const string& appointment_id,
-    const string& patient_id, const string& doctor_id, const string& complaint,
-    const string& diagnosis, const string& orders, bool need_hospitalize) {
+                                               const string& patient_id, const string& doctor_id,
+                                               const string& complaint, const string& diagnosis,
+                                               const string& orders, bool need_hospitalize) {
     auto r = make_unique<MedicalRecord>();
     r->id = generateId();
     r->appointment_id = appointment_id;

@@ -5,30 +5,37 @@
 using namespace std;
 
 bool isValidNumber(const string& str) {
-    if (str.empty()) return false;
+    if (str.empty())
+        return false;
     return all_of(str.begin(), str.end(), ::isdigit);
 }
 
 bool isValidPhone(const string& phone) {
-    if (phone.size() != 11) return false;
-    if (phone[0] != '1') return false;
+    if (phone.size() != 11)
+        return false;
+    if (phone[0] != '1')
+        return false;
     return all_of(phone.begin(), phone.end(), ::isdigit);
 }
 
 bool isValidPin(const string& pin) {
-    if (pin.size() != 6) return false;
+    if (pin.size() != 6)
+        return false;
     return all_of(pin.begin(), pin.end(), ::isdigit);
 }
 
 bool isValidIDCard(const string& id_card) {
-    if (id_card.size() != 18) return false;
+    if (id_card.size() != 18)
+        return false;
 
     for (size_t i = 0; i < 17; i++) {
-        if (!isdigit(static_cast<unsigned char>(id_card[i]))) return false;
+        if (!isdigit(static_cast<unsigned char>(id_card[i])))
+            return false;
     }
 
     char last = id_card[17];
-    if (!isdigit(static_cast<unsigned char>(last)) && last != 'X' && last != 'x') return false;
+    if (!isdigit(static_cast<unsigned char>(last)) && last != 'X' && last != 'x')
+        return false;
 
     static const int weights[17] = {7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2};
     static const char check_chars[] = "10X98765432";
@@ -56,17 +63,19 @@ bool hasNoPipe(const string& str) {
 // ============================================================================
 
 bool parseInt(const string& str, int& out) {
-    if (!isValidNumber(str)) return false;
+    if (!isValidNumber(str))
+        return false;
     try {
         out = stoi(str);
     } catch (...) {
-        return false; // 数值越界等异常统一视为解析失败
+        return false;  // 数值越界等异常统一视为解析失败
     }
     return true;
 }
 
 bool parseLongLong(const string& str, long long& out) {
-    if (!isValidNumber(str)) return false;
+    if (!isValidNumber(str))
+        return false;
     try {
         out = stoll(str);
     } catch (...) {
@@ -76,15 +85,17 @@ bool parseLongLong(const string& str, long long& out) {
 }
 
 bool parseFloat(const string& str, float& out) {
-    if (str.empty() || str == ".") return false;
+    if (str.empty() || str == ".")
+        return false;
 
     bool dotSeen = false;
     for (char c : str) {
         if (c == '.') {
-            if (dotSeen) return false; // 多个小数点非法
+            if (dotSeen)
+                return false;  // 多个小数点非法
             dotSeen = true;
         } else if (!isdigit(static_cast<unsigned char>(c))) {
-            return false; // 出现非数字非小数点字符
+            return false;  // 出现非数字非小数点字符
         }
     }
 

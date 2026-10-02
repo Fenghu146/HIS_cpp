@@ -3,12 +3,9 @@
 #include "../config/his_config.h"
 #include <map>
 
-bool PaymentService::payPrescription(
-    PatientManager& patientMgr,
-    PrescriptionManager& prescriptionMgr,
-    DrugManager& drugMgr,
-    const string& patient_id) {
-
+bool PaymentService::payPrescription(PatientManager& patientMgr,
+                                     PrescriptionManager& prescriptionMgr, DrugManager& drugMgr,
+                                     const string& patient_id) {
     Patient* p = patientMgr.findPatient(patient_id);
     if (!p) {
         cout << "[错误] 未找到患者 " << patient_id << endl;
@@ -30,15 +27,15 @@ bool PaymentService::payPrescription(
 
     cout << "\n=== 未缴费处方 ===\n";
     for (size_t i = 0; i < unpaid.size(); i++) {
-        cout << "  " << (i + 1) << ". " << unpaid[i]->id
-             << " | 总金额：" << unpaid[i]->total_amount << " 分（"
-             << unpaid[i]->total_amount / 100.0 << " 元）"
+        cout << "  " << (i + 1) << ". " << unpaid[i]->id << " | 总金额：" << unpaid[i]->total_amount
+             << " 分（" << unpaid[i]->total_amount / 100.0 << " 元）"
              << " | " << unpaid[i]->create_time << endl;
     }
     cout << "  0. 返回\n";
     cout << "请选择要缴费的处方序号：";
     int idx = getValidChoice(0, static_cast<int>(unpaid.size()));
-    if (idx == 0) return false;
+    if (idx == 0)
+        return false;
 
     Prescription* rx = unpaid[idx - 1];
 
@@ -69,12 +66,9 @@ bool PaymentService::payPrescription(
     return true;
 }
 
-bool PaymentService::dispensePrescription(
-    PrescriptionManager& prescriptionMgr,
-    DrugManager& drugMgr,
-    ShortageManager& shortageMgr,
-    const string& patient_id) {
-
+bool PaymentService::dispensePrescription(PrescriptionManager& prescriptionMgr,
+                                          DrugManager& drugMgr, ShortageManager& shortageMgr,
+                                          const string& patient_id) {
     // 筛选已缴费（待取药）处方
     vector<Prescription*> paid;
     for (auto& rx : prescriptionMgr.list) {
@@ -90,14 +84,15 @@ bool PaymentService::dispensePrescription(
 
     cout << "\n=== 待取药处方 ===\n";
     for (size_t i = 0; i < paid.size(); i++) {
-        cout << "  " << (i + 1) << ". " << paid[i]->id
-             << " | 总金额：" << paid[i]->total_amount << " 分"
+        cout << "  " << (i + 1) << ". " << paid[i]->id << " | 总金额：" << paid[i]->total_amount
+             << " 分"
              << " | " << paid[i]->create_time << endl;
     }
     cout << "  0. 返回\n";
     cout << "请选择要取药的处方序号：";
     int idx = getValidChoice(0, static_cast<int>(paid.size()));
-    if (idx == 0) return false;
+    if (idx == 0)
+        return false;
 
     Prescription* rx = paid[idx - 1];
 
@@ -114,7 +109,8 @@ bool PaymentService::dispensePrescription(
     cout << "\n--- 检查库存 ---\n";
     bool allOk = true;
     map<string, int> demand;  // drug_id -> 该处方累计需求量
-    for (auto* item : items) demand[item->drug_id] += item->quantity;
+    for (auto* item : items)
+        demand[item->drug_id] += item->quantity;
 
     for (auto& [drug_id, need] : demand) {
         Drug* d = drugMgr.findDrug(drug_id);
@@ -123,8 +119,7 @@ bool PaymentService::dispensePrescription(
             allOk = false;
             continue;
         }
-        cout << "  " << d->general_name << "：需要 " << need
-             << "，库存 " << d->stock;
+        cout << "  " << d->general_name << "：需要 " << need << "，库存 " << d->stock;
         if (d->stock < need) {
             cout << "  ✗ 不足";
             allOk = false;
@@ -141,18 +136,15 @@ bool PaymentService::dispensePrescription(
         cout << "已自动登记缺药信息，请联系医生处理（可换药或等待补货）。\n";
         for (auto* item : items) {
             Drug* d = drugMgr.findDrug(item->drug_id);
-            if (!d) continue;
+            if (!d)
+                continue;
             if (d->stock < item->quantity) {
                 ShortageUrgency urgency = ShortageManager::calcUrgency(item->quantity, d->stock);
-                shortageMgr.addShortage(
-                    d->id, d->general_name,
-                    item->quantity, d->stock,
-                    rx->id, ShortageSource::DISPENSE,
-                    urgency
-                );
-                cout << "  已登记缺药：" << d->general_name
-                     << "（需 " << item->quantity << "，存 " << d->stock << "）"
-                     << (urgency == ShortageUrgency::URGENT ? " [紧急]" : "") << endl;
+                shortageMgr.addShortage(d->id, d->general_name, item->quantity, d->stock, rx->id,
+                                        ShortageSource::DISPENSE, urgency);
+                cout << "  已登记缺药：" << d->general_name << "（需 " << item->quantity << "，存 "
+                     << d->stock << "）" << (urgency == ShortageUrgency::URGENT ? " [紧急]" : "")
+                     << endl;
             }
         }
         return false;

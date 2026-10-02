@@ -6,11 +6,11 @@ using namespace std;
 
 void LogService::log(const string& role, const string& user_id, const string& action) {
     ofstream out(FILE_LOG, ios::app);
-    if (!out.is_open()) return;
+    if (!out.is_open())
+        return;
     out << "[" << nowTimestamp() << "] "
         << "[" << role << "] "
-        << "[" << user_id << "] "
-        << action << "\n";
+        << "[" << user_id << "] " << action << "\n";
     out.close();
 }
 
