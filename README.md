@@ -6,6 +6,9 @@
 
 覆盖「挂号 → 就诊 → 处方 → 缴费 → 取药 → 住院」完整就医闭环，采用清晰的分层架构与对象化设计。
 
+> **项目定位**：本仓库是 HIS 项目的**主力实现（当前版本）**，后续功能开发与生产化演进均在此进行。
+> 早期课程设计阶段的 C99 版本（[Fenghu146/HIS](https://github.com/Fenghu146/HIS)）定位为**历史存档与课程设计材料**，仅做维护性修复，不再承接新功能。
+
 ![C++](https://img.shields.io/badge/C%2B%2B-20-blue)
 ![CMake](https://img.shields.io/badge/CMake-3.16%2B-green)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen)
