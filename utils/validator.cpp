@@ -15,6 +15,11 @@ bool isValidPhone(const string& phone) {
     return all_of(phone.begin(), phone.end(), ::isdigit);
 }
 
+bool isValidPin(const string& pin) {
+    if (pin.size() != 6) return false;
+    return all_of(pin.begin(), pin.end(), ::isdigit);
+}
+
 bool isValidIDCard(const string& id_card) {
     if (id_card.size() != 18) return false;
 

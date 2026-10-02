@@ -84,6 +84,10 @@ void PatientManager::registerPatient() {
     cout << "请输入身份证:"; inputLine(p->id_card);
     if (!isValidIDCard(p->id_card)) { cout << "[错误] 身份证格式不正确！\n"; return; }
     cout << "请输入6位密码:"; inputLine(p->pin);
+    while (!isValidPin(p->pin)) {
+        cout << "[错误] 密码必须为 6 位数字，请重新输入:";
+        inputLine(p->pin);
+    }
 
     string newId = generateId();
     p->id = newId;
