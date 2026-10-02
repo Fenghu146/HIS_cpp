@@ -181,6 +181,8 @@ bool ConsultationService::consultPatient(
 
     if (needHosp) {
         cout << "[提示] 该患者建议住院，请办理住院手续。\n";
+    } else {
+        cout << "[提示] 本次就诊无需住院。\n";
     }
 
     return true;
