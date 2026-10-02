@@ -29,11 +29,12 @@ jobs:
       - name: Build
         run: cmake --build build --config Release -j 2
 
-      - name: Check zero warnings (GCC/Clang)
-        if: runner.os != 'Windows'
+      - name: Check zero warnings
         run: |
           rm -rf build-warncheck && cmake -B build-warncheck -DCMAKE_BUILD_TYPE=Release >/dev/null
-          out=$(cmake --build build-warncheck -j 2 2>&1 | grep -c "warning:" || true)
+          cmake --build build-warncheck --config Release -j 2 2>&1 | tee warn-build.log
+          # 同时匹配 GCC/Clang（warning:）与 MSVC（warning C####）两种告警格式
+          out=$(grep -cE "warning(:| C[0-9]+)" warn-build.log || true)
           echo "warning count = $out"
           if [ "$out" -ne 0 ]; then
             echo "::error::编译告警未清零（$out 条）"
