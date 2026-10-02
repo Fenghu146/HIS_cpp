@@ -49,6 +49,11 @@ assert_eq() {
 # 多配置（MSVC，产物在 build/<Config>/HIS_cpp.exe）生成器。
 find_bin() {
     local c
+    # 优先尊重调用方注入的产物路径（CTest / CI 可用 HIS_BIN 指定）
+    if [ -n "${HIS_BIN:-}" ] && [ -f "$HIS_BIN" ]; then
+        printf '%s' "$HIS_BIN"
+        return 0
+    fi
     for c in \
         "$SRC/build/HIS_cpp" \
         "$SRC/build/HIS_cpp.exe" \

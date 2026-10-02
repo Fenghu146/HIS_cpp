@@ -54,3 +54,15 @@ else()
 endif()
 
 # ---- 运行说明：程序使用相对路径读取 data/*.txt，需在项目根目录下运行可执行文件 ----
+
+# ---- 测试：ctest 直接驱动全流程回归脚本（stdin 驱动真实菜单闭环）----
+enable_testing()
+add_test(
+    NAME full_flow_regression
+    COMMAND ${CMAKE_COMMAND} -E env "HIS_BIN=$<TARGET_FILE:HIS_cpp>"
+            bash ${CMAKE_CURRENT_SOURCE_DIR}/tests/full_flow_test.sh
+)
+set_tests_properties(full_flow_regression PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    TIMEOUT 600
+)
