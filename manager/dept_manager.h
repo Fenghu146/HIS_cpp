@@ -14,6 +14,7 @@ public:
 
     void registerDepartment();
     Department* findDepartment(const string& id);
+    Department* findDepartmentByName(const string& name);
     bool deleteDepartment(const string& id, DoctorManager& docMgr, DrugManager& drugMgr);
     void listDepartment(DoctorManager& docMgr);
     bool exists(const string& id) const;

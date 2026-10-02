@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "data_manager.h"
 
 class DoctorManager : public DataManager<Doctor> {
@@ -9,8 +10,10 @@ public:
     void load() override;
     void save() override;
 
-    void registerDoctor();
+    // deptExists：科室存在性校验回调（可选，未注入时跳过引用校验）
+    void registerDoctor(const std::function<bool(const std::string&)>& deptExists = nullptr);
     Doctor* findDoctor(const string& id);
+    Doctor* findByAccount(const string& account);
     bool deleteDoctor(const string& id);
     void listDoctor();
     int countDoctorsInDept(const string& dept_name) const;

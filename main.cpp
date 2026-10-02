@@ -24,7 +24,7 @@ using namespace std;
 // ==================== 前向声明 ====================
 
 void showPatientMgmtMenu(PatientManager& mgr);
-void showDoctorMgmtMenu(DoctorManager& mgr);
+void showDoctorMgmtMenu(DoctorManager& mgr, DepartmentManager& deptMgr);
 void showDeptMgmtMenu(DepartmentManager& deptMgr, DoctorManager& docMgr, DrugManager& drugMgr);
 void showDrugMgmtMenu(DrugManager& drugMgr, DepartmentManager& deptMgr);
 void showBedMgmtMenu(BedManager& bedMgr, DepartmentManager& deptMgr);
@@ -70,7 +70,7 @@ void showAdminMenu(PatientManager& patientMgr, DoctorManager& doctorMgr,
         int choice = getValidChoice(0, 7);
         switch (choice) {
             case 1: showPatientMgmtMenu(patientMgr); break;
-            case 2: showDoctorMgmtMenu(doctorMgr); break;
+            case 2: showDoctorMgmtMenu(doctorMgr, deptMgr); break;
             case 3: showDeptMgmtMenu(deptMgr, doctorMgr, drugMgr); break;
             case 4: showDrugMgmtMenu(drugMgr, deptMgr); break;
             case 5: showBedMgmtMenu(bedMgr, deptMgr); break;
@@ -135,7 +135,7 @@ void showPatientMgmtMenu(PatientManager& mgr) {
 
 // ==================== 医生管理子菜单 ====================
 
-void showDoctorMgmtMenu(DoctorManager& mgr) {
+void showDoctorMgmtMenu(DoctorManager& mgr, DepartmentManager& deptMgr) {
     while (true) {
         cout << "\n=== 医生管理 ===\n";
         cout << "1. 注册医生\n";
@@ -146,7 +146,9 @@ void showDoctorMgmtMenu(DoctorManager& mgr) {
 
         int choice = getValidChoice(0, 4);
         switch (choice) {
-            case 1: mgr.registerDoctor(); break;
+            case 1: mgr.registerDoctor([&deptMgr](const string& name) {
+                        return deptMgr.findDepartmentByName(name) != nullptr;
+                    }); break;
             case 2: {
                 cout << "请输入医生ID:";
                 string id; inputLine(id);

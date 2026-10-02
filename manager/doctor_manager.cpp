@@ -62,14 +62,33 @@ void DoctorManager::save() {
     out.close();
 }
 
-void DoctorManager::registerDoctor() {
+void DoctorManager::registerDoctor(const std::function<bool(const std::string&)>& deptExists) {
     auto d = make_unique<Doctor>();
 
     cout << "请输入姓名："; inputLine(d->name);
+    while (d->name.empty()) {
+        cout << "[错误] 姓名不能为空，请重新输入：";
+        inputLine(d->name);
+    }
     cout << "请输入科室："; inputLine(d->dept_name);
+    if (deptExists) {
+        while (!deptExists(d->dept_name)) {
+            cout << "[错误] 科室「" << d->dept_name << "」不存在，请先创建该科室或重新输入：";
+            inputLine(d->dept_name);
+        }
+    }
     cout << "请输入擅长领域："; inputLine(d->specialty);
     cout << "请输入账号："; inputLine(d->account);
+    while (d->account.empty() || findByAccount(d->account) != nullptr) {
+        cout << (d->account.empty() ? "[错误] 账号不能为空，请重新输入："
+                                    : "[错误] 账号已被注册，请重新输入：");
+        inputLine(d->account);
+    }
     cout << "请输入密码："; inputLine(d->password);
+    while (d->password.empty()) {
+        cout << "[错误] 密码不能为空，请重新输入：";
+        inputLine(d->password);
+    }
 
     string newId = generateId();
     d->id = newId;
@@ -82,6 +101,13 @@ void DoctorManager::registerDoctor() {
 
 Doctor *DoctorManager::findDoctor(const string &id) {
     return findById(list, id);
+}
+
+Doctor *DoctorManager::findByAccount(const string &account) {
+    for (auto &d : list) {
+        if (d->account == account) return d.get();
+    }
+    return nullptr;
 }
 
 bool DoctorManager::deleteDoctor(const string &id) {

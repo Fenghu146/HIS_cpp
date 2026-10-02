@@ -69,6 +69,13 @@ Department *DepartmentManager::findDepartment(const string &id) {
     return findById(list, id);
 }
 
+Department *DepartmentManager::findDepartmentByName(const string &name) {
+    for (auto &d : list) {
+        if (d->name == name) return d.get();
+    }
+    return nullptr;
+}
+
 bool DepartmentManager::deleteDepartment(const string &id, DoctorManager &docMgr, DrugManager &drugMgr) {
     Department* d = findDepartment(id);
     if (!d) {
