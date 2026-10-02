@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: shellcheck
-        run: shellcheck tests/*.sh
+        run: shellcheck tests/*.sh docs/demo/*.sh
 
       - name: cppcheck
         run: |
@@ -66,3 +66,7 @@ jobs:
 
       - name: Run full-flow regression tests
         run: bash tests/full_flow_test.sh
+
+      - name: Run one-shot demo (防演示脚本腐烂)
+        if: runner.os == 'Linux'
+        run: bash docs/demo/demo.sh
