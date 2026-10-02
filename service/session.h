@@ -6,7 +6,7 @@ using namespace std;
 // 全局会话单例：保存当前登录身份
 class Session {
     static Session* instance;
-    string role;       // "patient" / "doctor" / "admin" / ""
+    string role;  // "patient" / "doctor" / "admin" / ""
     string user_id;
     string user_name;
 
@@ -18,9 +18,9 @@ public:
     void login(const string& role, const string& id, const string& name);
     void logout();
     bool isLoggedIn() const;
-    string getRole() const;
-    string getUserId() const;
-    string getUserName() const;
+    const string& getRole() const;
+    const string& getUserId() const;
+    const string& getUserName() const;
 
     // 禁止拷贝
     Session(const Session&) = delete;
@@ -31,7 +31,8 @@ public:
 inline Session* Session::instance = nullptr;
 
 inline Session* Session::getInstance() {
-    if (!instance) instance = new Session();
+    if (!instance)
+        instance = new Session();
     return instance;
 }
 
@@ -47,7 +48,15 @@ inline void Session::logout() {
     user_name = "";
 }
 
-inline bool Session::isLoggedIn() const { return !role.empty(); }
-inline string Session::getRole() const { return role; }
-inline string Session::getUserId() const { return user_id; }
-inline string Session::getUserName() const { return user_name; }
+inline bool Session::isLoggedIn() const {
+    return !role.empty();
+}
+inline const string& Session::getRole() const {
+    return role;
+}
+inline const string& Session::getUserId() const {
+    return user_id;
+}
+inline const string& Session::getUserName() const {
+    return user_name;
+}

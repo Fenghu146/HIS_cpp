@@ -13,19 +13,17 @@ public:
     void load() override;
     void save() override;
 
-    PrescriptionItem* addItem(const string& prescription_id, const string& drug_id,
-                               int quantity, const string& usage, int amount);
+    PrescriptionItem* addItem(const string& prescription_id, const string& drug_id, int quantity,
+                              const string& usage, int amount);
     void listByPrescription(const string& prescription_id);
     void listAll();
 
     // 按处方 ID 直接索引查询（O(1)）
     const vector<PrescriptionItem*>& getItemsByRxId(const string& prescription_id) const;
 
-    PrescriptionItemManager() : DataManager(FILE_PRESCRIPTION_ITEM){}
+    PrescriptionItemManager() : DataManager(FILE_PRESCRIPTION_ITEM) {}
 
-    string generateId() {
-        return string(ID_PREFIX_PRESCRIPTION_ITEM) + to_string(next_id++);
-    }
+    string generateId() { return string(ID_PREFIX_PRESCRIPTION_ITEM) + to_string(next_id++); }
 
 private:
     unordered_map<string, vector<PrescriptionItem*>> by_prescription;
@@ -51,19 +49,17 @@ public:
     // 创建处方（含明细）
     struct ItemInput {
         string drug_id;
-        int quantity;
+        int quantity = 0;
         string usage;
-        int amount;
+        int amount = 0;
     };
     Prescription* addPrescription(const string& record_id, const string& patient_id,
-                                   const string& doctor_id, const vector<ItemInput>& items);
+                                  const string& doctor_id, const vector<ItemInput>& items);
 
     // 显示处方（含明细）
     void displayPrescription(const string& prescription_id, DrugManager& drugMgr);
 
-    PrescriptionManager() : DataManager(FILE_PRESCRIPTION){}
+    PrescriptionManager() : DataManager(FILE_PRESCRIPTION) {}
 
-    string generateId() {
-        return string(ID_PREFIX_PRESCRIPTION) + to_string(next_id++);
-    }
+    string generateId() { return string(ID_PREFIX_PRESCRIPTION) + to_string(next_id++); }
 };
