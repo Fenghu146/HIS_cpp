@@ -202,6 +202,12 @@ assert_has "药品出库成功" "出库成功！当前库存：98" "$o"
 assert_has "取药成功" "取药成功！处方 RX1" "$o"
 assert_not_has "全流程无错误提示" "[错误]" "$o"
 
+# --- 凭据存储守护：注册即哈希，明文密码/PIN 不落盘 ---
+assert_not_has "医生密码明文不落盘" "|pwd001|" "$DATA/doctor.txt"
+assert_has "医生密码哈希已落盘" "72ba6aa729caf8f430e64db59fdcc506137be47ab0528288b956bca8f49f801b" "$DATA/doctor.txt"
+assert_not_has "患者PIN明文不落盘" "|123456|" "$DATA/patient.txt"
+assert_has "患者PIN哈希已落盘" "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92" "$DATA/patient.txt"
+
 # ============================================================
 # 用例 2：边界 — 身份证校验位 / 账号唯一 / 科室引用 / PIN 格式
 # ============================================================
