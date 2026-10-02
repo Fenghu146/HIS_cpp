@@ -1,6 +1,7 @@
 #include "payment.h"
 #include "../utils/input.h"
 #include "../config/his_config.h"
+#include <map>
 
 bool PaymentService::payPrescription(
     PatientManager& patientMgr,
@@ -109,18 +110,22 @@ bool PaymentService::dispensePrescription(
     }
 
     // Phase 1: 预检查所有明细库存（不修改任何数据）
+    // 按药品聚合需求总量，防止同一药品多明细累积超卖
     cout << "\n--- 检查库存 ---\n";
     bool allOk = true;
-    for (auto* item : items) {
-        Drug* d = drugMgr.findDrug(item->drug_id);
+    map<string, int> demand;  // drug_id -> 该处方累计需求量
+    for (auto* item : items) demand[item->drug_id] += item->quantity;
+
+    for (auto& [drug_id, need] : demand) {
+        Drug* d = drugMgr.findDrug(drug_id);
         if (!d) {
-            cout << "[错误] 药品 " << item->drug_id << " 不存在\n";
+            cout << "[错误] 药品 " << drug_id << " 不存在\n";
             allOk = false;
             continue;
         }
-        cout << "  " << d->general_name << "：需要 " << item->quantity
+        cout << "  " << d->general_name << "：需要 " << need
              << "，库存 " << d->stock;
-        if (d->stock < item->quantity) {
+        if (d->stock < need) {
             cout << "  ✗ 不足";
             allOk = false;
         } else {
