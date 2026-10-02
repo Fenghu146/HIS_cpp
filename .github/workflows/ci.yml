@@ -7,6 +7,29 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    name: Lint (shellcheck / cppcheck / clang-format)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: shellcheck tests/*.sh
+
+      - name: cppcheck
+        run: |
+          sudo apt-get update >/dev/null && sudo apt-get install -y cppcheck >/dev/null
+          cppcheck --std=c++17 --enable=warning,performance,portability \
+            --suppress=missingIncludeSystem --error-exitcode=1 \
+            manager model service utils main.cpp
+
+      - name: clang-format 格式门（钉版本 23.1.2，与本地一致）
+        run: |
+          python3 -m pip install clang-format==23.1.2
+          clang-format --dry-run -Werror \
+            $(find manager model service utils \( -name '*.h' -o -name '*.cpp' \)) main.cpp
+
   build-and-test:
     name: Build & Regression (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
